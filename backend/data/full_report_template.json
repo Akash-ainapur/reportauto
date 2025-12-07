@@ -1,0 +1,101 @@
+{
+    "__comment": "Master Data Source for Automated Report Generation",
+    "global_metadata": {
+        "project_title": "!!! PROJECT OMEGA: AI-DRIVEN WORLD DOMINATION !!!",
+        "project_subtitle": ">>> TEST_SUBTITLE: AUTOMATED GENERATION PROTOCOL v9.9 <<<",
+        "domain": "INTERPLANETARY AI",
+        "academic_year": "3024 - 3025",
+        "semester": "X",
+        "college_name": "GALACTIC INSTITUTE OF TECHNOLOGY",
+        "department_name": "DEPARTMENT OF QUANTUM COMPUTING",
+        "department_abbr": "DQC",
+        "city_code": "MARS COLONY - 001",
+        "pincode": "999999"
+    },
+    "submission_info": {
+        "date": "[DATE]",
+        "place": "BANGALORE",
+        "academic_year_range": "2024-2025"
+    },
+    "people": {
+        "students": [
+            {
+                "usn": "ID-999-001",
+                "name": ">>> ALIEN STUDENT ALPHA <<<"
+            },
+            {
+                "usn": "ID-999-002",
+                "name": ">>> CYBORG STUDENT BETA <<<"
+            },
+            {
+                "usn": "ID-999-003",
+                "name": ">>> MUTANT STUDENT GAMMA <<<"
+            },
+            {
+                "usn": "ID-999-004",
+                "name": ">>> ANDROID STUDENT DELTA <<<"
+            }
+        ],
+        "guides": [
+            {
+                "name": ">>> PROF. DUMBLEDORE <<<",
+                "designation": "HEAD WIZARD",
+                "department": "DEPT OF MAGIC",
+                "role": "Internal Guide"
+            }
+        ],
+        "approvers": {
+            "hod": {
+                "name": "Dr. Kiran Babu T S",
+                "designation": "Professor & Head",
+                "department": "Department of CSE"
+            },
+            "dean": {
+                "name": "Dr. I Hameem Shanavas",
+                "designation": "Dean",
+                "school": "School of CSE"
+            },
+            "principal": {
+                "name": "Dr. Ajayan K R",
+                "designation": "Principal"
+            },
+            "external_examiners": [
+                {
+                    "label": "Name of examiners",
+                    "signature_placeholder": "Signature with date"
+                }
+            ]
+        }
+    },
+    "report_content": {
+        "abstract": {
+            "text": "This study investigates..."
+        },
+        "acknowledgement": {
+            "standard_text": "We are thankful to {principal_name}, Principal of {college_name} for his encouragement..."
+        },
+        "declaration": {
+            "text": "We, students of {semester} semester B.E., Department of {department_name}, {college_name}, hereby declare that..."
+        },
+        "system_configuration": {
+            "hardware": [
+                "Processor: Intel i5/Ryzen 5 or higher (2.4 GHz+)",
+                "RAM: 8 GB (16 GB recommended)",
+                "Storage: At least 50 GB free (SSD preferred)"
+            ],
+            "software": [
+                "Frontend: React.js, Vue.js, or Angular",
+                "Backend: Spring Boot or Node.js",
+                "Database: MongoDB (or MySQL/PostgreSQL)"
+            ]
+        },
+        "chapters": [
+            {
+                "chapter_number": 1,
+                "title": "INTRODUCTION",
+                "sections": []
+            }
+        ],
+        "references": []
+    }
+}

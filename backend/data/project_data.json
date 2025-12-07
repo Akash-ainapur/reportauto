@@ -1,0 +1,65 @@
+{
+    "project_info": {
+        "title": "HAZARD WASTE DETECTION USING AI AND IOT",
+        "subtitle": "MVJ NEXTGEN EDUCLOUD: AI-BASED ACADEMIC RESOURCE MANAGER",
+        "domain": "AI & IOT"
+    },
+    "academic_info": {
+        "academic_year": "2024 - 2025",
+        "degree": "BACHELOR OF ENGINEERING",
+        "department_full": "DEPARTMENT OF COMPUTER SCIENCE & ENGINEERING",
+        "department_short": "COMPUTER SCIENCE & ENGINEERING",
+        "department_abbr": "CSE",
+        "semester": "8"
+    },
+    "college_info": {
+        "name": "MVJ COLLEGE OF ENGINEERING",
+        "city": "BANGALORE - 67",
+        "address": "Near ITPB, Whitefield, Bangalore-560067"
+    },
+    "student_team": [
+        {
+            "usn": "1MJ22CS217",
+            "name": "ARUN PRAKASH PATTAR"
+        },
+        {
+            "usn": "1MJ23CS411",
+            "name": "HEMANTH S SAVANTH"
+        },
+        {
+            "usn": "1MJ23CS406",
+            "name": "CHINMAHESH C"
+        },
+        {
+            "usn": "1MJ22CS029",
+            "name": "BHAVYASHREE R"
+        }
+    ],
+    "faculty_info": {
+        "guide": {
+            "name": "Mrs. Sumanjali",
+            "designation": "Assistant Professor",
+            "department": "Department of CSE"
+        },
+        "hod": {
+            "name": "Dr. Kiran Babu T S",
+            "designation": "Professor & Head",
+            "department": "Department of CSE"
+        },
+        "dean": {
+            "name": "Dr. I Hameem Shanavas",
+            "designation": "Dean",
+            "school": "School of CSE"
+        },
+        "principal": {
+            "name": "Dr. Suresh Babu V",
+            "designation": "Principal"
+        }
+    },
+    "placeholders_map": {
+        "title_placeholder": "HAZARD WASTE DETECTION USING AI AND IOT",
+        "subtitle_placeholder": "MVJ NEXTGEN EDUCLOUD:AI-BASED ACADEMIC RESOURCE MANAGER",
+        "dept_placeholder": "COMPUTER SCIENCE & ENGINEERING",
+        "year_placeholder": "2024 - 2025"
+    }
+}

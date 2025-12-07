@@ -34,121 +34,143 @@ def add_page_number(paragraph):
 def update_project_doc_with_dummies(input_path):
     doc = Document(input_path)
     base, ext = os.path.splitext(input_path)
-    output_path = base + "_dummy_fixed.docx"
+    # output_path = base + "_dummy_fixed.docx" 
+    output_path = base.replace("senior_project_template", "senior_project_front_page_filled") + ext
 
-    # --- DUMMY PLACEHOLDER DATA ---
-    dummy_project_title = "ZQX-HAZARDOUS1234-AI-IOT"
-    dummy_project_name = "<<<FAKE_PROJECT_XYZ>>>"
-    dummy_degree = "FAKE DEGREE OF MAGIC TECHNOLOGY"
-    dummy_department = "DEPT-OF-GALACTIC-COMPUTING"
-    dummy_college = "INTERPLANETARY MVJ ACADEMY"
-    dummy_city = "NEBULA CITY - 999"
-    dummy_year = "GALACTIC YEAR 3030 - 3031"
-    dummy_guide_name = "Prof. XÆ-12 Quantum"
-    dummy_guide_designation = "Chief Mentor, Parallel Universe Division"
-    dummy_header = "HEADER_TITLE_$$$__ZQX"
-    dummy_footer_text = "FOOTER_LINE__8888__DEPT-TEST   "
-    dummy_students = [
-        ("ID-XYZ001", "Alpha Centauri"),
-        ("ID-XYZ002", "Beta Orion"),
-        ("ID-XYZ003", "Gamma Hydra"),
-        ("ID-XYZ004", "Delta Lyra")
-    ]
+    # --- LOAD JSON DATA ---
+    import json
+    json_path = r"D:\Model\REPORT1\AutomatedReportGenerator\backend\data\full_report_template.json"
+    
+    try:
+        with open(json_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+    except FileNotFoundError:
+        print(f"Error: JSON file not found at {json_path}")
+        return
 
-    # --- TEXT REPLACEMENTS ---
+    meta = data["global_metadata"]
+    guides = data["people"]["guides"][0]
+    
+    # --- TEXT REPLACEMENTS MAPPING ---
     replacements = {
-        "HAZARD WASTE DETECTION USING AI AND IOT": dummy_project_title,
-        "MVJ NEXTGEN EDUCLOUD:AI-BASED ACADEMIC RESOURCE MANAGER": dummy_project_name,
-        "BACHELOR OF ENGINEERING": dummy_degree,
-        "COMPUTER SCIENCE & ENGINEERING": dummy_department,
-        "Mrs. Sumanjali": dummy_guide_name,
-        "Sumanjali": dummy_guide_name,  # catches split runs
-        "Assistant Professor, Department of CSE": dummy_guide_designation,
-        "DEPARTMENT OF COMPUTER SCIENCE & ENGINEERING": dummy_department,
-        "MVJ COLLEGE OF ENGINEERING": dummy_college,
-        "BANGALORE - 67": dummy_city,
-        "ACADEMIC YEAR 2024 - 2025": dummy_year
+        "HAZARD WASTE DETECTION USING AI AND IOT": meta["project_title"],
+        "MVJ NEXTGEN EDUCLOUD:AI-BASED ACADEMIC RESOURCE MANAGER": meta["project_subtitle"],
+        "BACHELOR OF ENGINEERING": "BACHELOR OF ENGINEERING", # Usually static, or add to JSON if needed
+        "COMPUTER SCIENCE & ENGINEERING": meta["department_name"].replace("DEPARTMENT OF ", ""), # or just use meta['department_abbr']
+        "DEPARTMENT OF COMPUTER SCIENCE & ENGINEERING": meta["department_name"],
+        "MVJ COLLEGE OF ENGINEERING": meta["college_name"],
+        "BANGALORE - 67": meta["city_code"],
+        "ACADEMIC YEAR 2024 - 2025": f"ACADEMIC YEAR {meta['academic_year']}",
+        
+        # Guide Details
+        "Mrs. Sumanjali": guides["name"],
+        "Sumanjali": guides["name"],
+        "Assistant Professor, Department of CSE": f"{guides['designation']}, {guides['department']}",
     }
 
-    # --- Replace text in paragraphs (run-safe) ---
+    # --- Replace text in paragraphs (FRONT PAGE ONLY) ---
+    # We assume the front page is the first section or explicitly the first page logic.
+    # In python-docx, checking exactly "page 1" is hard, but usually front page = first section or first N paragraphs.
+    # Best bet: Iterate paragraphs in the first section's range if possible, or just break early.
+    # Simple approach: The Front Page in this template is likely Section 1.
+    
+    first_section = doc.sections[0]
+    
+    # Text replacements in body paragraphs of the first section
+    # Note: doc.sections[0].parts is not directly iterable for paragraphs like this.
+    # We must match the paragraphs that belong to the front page.
+    # A safer approximate for "Front Page" is to replace only until we hit a page break or section break.
+    
     for para in doc.paragraphs:
+        # Check if we moved past the front page (naive check: if we see "CERTIFICATE" or similar)
+        if "CERTIFICATE" in para.text.upper():
+            break
+            
         for old, new in replacements.items():
             replace_text_runs(para, old, new)
 
-    # --- Replace text inside tables ---
-    for table in doc.tables:
-        for row in table.rows:
+    # --- Replace text inside tables (FRONT PAGE ONLY) ---
+    # The first table is the student list on the front page.
+    if doc.tables:
+        student_table = doc.tables[0] # Only touch the first table
+        for row in student_table.rows:
             for cell in row.cells:
                 for old, new in replacements.items():
                     if old in cell.text:
                         cell.text = cell.text.replace(old, new)
+    
+    # (Skip looping through all other tables)
 
     # --- Update student IDs and names ---
     if doc.tables:
         table = doc.tables[0]
-        for i, (dummy_id, dummy_name) in enumerate(dummy_students):
+        students = data["people"]["students"]
+        for i, stud in enumerate(students):
             if i < len(table.rows):
-                table.cell(i, 0).text = dummy_id
-                table.cell(i, 1).text = dummy_name
+                table.cell(i, 0).text = stud["usn"]
+                table.cell(i, 1).text = stud["name"]
 
-    # --- HEADER ---
-    for section in doc.sections:
-        header = section.header
-        if header.paragraphs:
-            header.paragraphs[0].text = dummy_header
-        else:
-            header.add_paragraph(dummy_header)
+    # --- HEADER (FRONT PAGE ONLY) ---
+    # Usually Front Page has a separate header/footer or First Page Header.
+    # We will only touch the first section's header.
+    section = doc.sections[0] 
+    header = section.header
+    # Sometimes the header text is split or complex, but for this template it's just the title
+    if header.paragraphs:
+        replace_text_runs(header.paragraphs[0], "HAZARD WASTE DETECTION USING AI AND IOT", meta["project_title"])
+    else:
+        header.add_paragraph(meta["project_title"])
 
-    # --- FOOTER (preserve structure with tabs, replace text in place) ---
+    # --- FOOTER (FRONT PAGE ONLY) ---
     # Handle various dash characters: regular hyphen (-), en dash (–), em dash (—)
-    for section in doc.sections:
-        footer = section.footer
-        for para in footer.paragraphs:
-            if not para.runs:
-                continue
-                
-            # Get full text to check what's actually there
-            full_text = "".join(run.text for run in para.runs)
+    # Again, only touching Section 0
+    footer = section.footer
+    for para in footer.paragraphs:
+        if not para.runs:
+            continue
             
-            # Replace year patterns while preserving tabs and structure
-            year_patterns = [
-                (r"2024\s*[-–—]\s*2025", dummy_year),  # Matches "2024 - 2025", "2024 – 2025", etc.
-                (r"ACADEMIC YEAR\s+2024\s*[-–—]\s*2025", dummy_year),
-            ]
-            
-            text_replaced = False
-            for pattern, replacement in year_patterns:
-                if re.search(pattern, full_text):
-                    # Find which run contains the year text
-                    for run in para.runs:
-                        if re.search(pattern, run.text):
-                            # Replace only the year part, preserve tabs and other text
-                            run.text = re.sub(pattern, replacement, run.text)
-                            text_replaced = True
-                            break
-                    if text_replaced:
+        # Get full text to check what's actually there
+        full_text = "".join(run.text for run in para.runs)
+        
+        # Replace year patterns while preserving tabs and structure
+        year_patterns = [
+            (r"2024\s*[-–—]\s*2025", meta["academic_year"]),  # Matches "2024 - 2025", "2024 – 2025", etc.
+            (r"ACADEMIC YEAR\s+2024\s*[-–—]\s*2025", f"ACADEMIC YEAR {meta['academic_year']}"),
+        ]
+        
+        text_replaced = False
+        for pattern, replacement in year_patterns:
+            if re.search(pattern, full_text):
+                # Find which run contains the year text
+                for run in para.runs:
+                    if re.search(pattern, run.text):
+                        # Replace only the year part, preserve tabs and other text
+                        run.text = re.sub(pattern, replacement, run.text)
+                        text_replaced = True
                         break
-            
-            # Replace department names if present
-            dept_replacements = {
-                "COMPUTER SCIENCE & ENGINEERING": dummy_department,
-                "DEPARTMENT OF COMPUTER SCIENCE & ENGINEERING": dummy_department,
-                "CSE": dummy_department.split()[-1] if len(dummy_department.split()) > 0 else "CSE",
-                "Computer Science": dummy_department,
-            }
-            
-            for old, new in dept_replacements.items():
-                if old in full_text:
-                    # Replace in the run that contains the department text
-                    for run in para.runs:
-                        if old in run.text:
-                            run.text = run.text.replace(old, new)
-                            break
+                if text_replaced:
+                    break
+        
+        # Replace department names if present
+        dept_replacements = {
+            "COMPUTER SCIENCE & ENGINEERING": meta["department_name"].replace("DEPARTMENT OF ", ""),
+            "DEPARTMENT OF COMPUTER SCIENCE & ENGINEERING": meta["department_name"],
+            "CSE": meta["department_abbr"],
+            "Computer Science": meta["department_name"],
+        }
+        
+        for old, new in dept_replacements.items():
+            if old in full_text:
+                # Replace in the run that contains the department text
+                for run in para.runs:
+                    if old in run.text:
+                        run.text = run.text.replace(old, new)
+                        break
 
     # Save updated doc
     doc.save(output_path)
     print(f"Dummy-fixed file saved as: {output_path}")
 
 # --- RUN ---
-input_file = r"D:\Model\REPORT1\AutomatedReportGenerator\templates\senior_project_template.docx"
+input_file = r"D:\Model\REPORT1\AutomatedReportGenerator\backend\templates\senior_project_template.docx"
 update_project_doc_with_dummies(input_file)
