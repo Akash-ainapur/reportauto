@@ -33,13 +33,23 @@ def add_page_number(paragraph):
 
 def update_project_doc_with_dummies(input_path):
     doc = Document(input_path)
-    base, ext = os.path.splitext(input_path)
-    # output_path = base + "_dummy_fixed.docx" 
-    output_path = base.replace("senior_project_template", "senior_project_front_page_filled") + ext
+    
+    # Get the directory of the current script
+    current_script_dir = os.path.dirname(os.path.abspath(__file__))
+    # Go up 3 levels to get to project root (generator -> scripts -> backend -> root)
+    project_root = os.path.dirname(os.path.dirname(os.path.dirname(current_script_dir)))
+    
+    output_dir = os.path.join(project_root, "output")
+    os.makedirs(output_dir, exist_ok=True)
+    
+    filename = os.path.basename(input_path)
+    base, ext = os.path.splitext(filename)
+    output_filename = f"{base}_filled{ext}"
+    output_path = os.path.join(output_dir, output_filename)
 
     # --- LOAD JSON DATA ---
     import json
-    json_path = r"C:\\Users\\sumam\OneDrive\\Documents\\ReportMaker\\reportauto\\backend\\data\\full_report_template.json"
+    json_path = os.path.join(project_root, "backend", "data", "full_report_template.json")
     
     try:
         with open(json_path, 'r', encoding='utf-8') as f:
@@ -53,6 +63,7 @@ def update_project_doc_with_dummies(input_path):
     
     # --- TEXT REPLACEMENTS MAPPING ---
     replacements = {
+        "A PROJECT PHASE I REPORT": "Makabulla Project Phase I Report",
         "HAZARD WASTE DETECTION USING AI AND IOT": meta["project_title"],
         "MVJ NEXTGEN EDUCLOUD:AI-BASED ACADEMIC RESOURCE MANAGER": meta["project_subtitle"],
         "BACHELOR OF ENGINEERING": "BACHELOR OF ENGINEERING", # Usually static, or add to JSON if needed
@@ -107,8 +118,18 @@ def update_project_doc_with_dummies(input_path):
         students = data["people"]["students"]
         for i, stud in enumerate(students):
             if i < len(table.rows):
-                table.cell(i, 0).text = stud["usn"]
-                table.cell(i, 1).text = stud["name"]
+
+                # Update USN with bold formatting
+                cell_usn = table.cell(i, 0)
+                cell_usn.text = "" # Clear existing content
+                run_usn = cell_usn.paragraphs[0].add_run(stud["usn"])
+                run_usn.bold = True
+                
+                # Update Name with bold formatting
+                cell_name = table.cell(i, 1)
+                cell_name.text = "" # Clear existing content
+                run_name = cell_name.paragraphs[0].add_run(stud["name"])
+                run_name.bold = True
 
     # --- HEADER (FRONT PAGE ONLY) ---
     # Usually Front Page has a separate header/footer or First Page Header.
@@ -172,5 +193,14 @@ def update_project_doc_with_dummies(input_path):
     print(f"Dummy-fixed file saved as: {output_path}")
 
 # --- RUN ---
-input_file = r"C:\\Users\\sumam\\OneDrive\\Documents\\senior_project_template.docx"
-update_project_doc_with_dummies(input_file)
+
+if __name__ == "__main__":
+    # Calculate input file path dynamically
+    current_script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(os.path.dirname(os.path.dirname(current_script_dir)))
+    input_file = os.path.join(project_root, "backend", "templates", "template_indivisual", "front_page.docx")
+    
+    if os.path.exists(input_file):
+        update_project_doc_with_dummies(input_file)
+    else:
+        print(f"Error: Template file not found at {input_file}")

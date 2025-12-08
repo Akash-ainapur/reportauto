@@ -22,22 +22,10 @@
 
     "people": {
         "students": [
-            {
-                "usn": "ID-999-001",
-                "name": ">>> ALIEN STUDENT ALPHA <<<"
-            },
-            {
-                "usn": "ID-999-002",
-                "name": ">>> CYBORG STUDENT BETA <<<"
-            },
-            {
-                "usn": "ID-999-003",
-                "name": ">>> MUTANT STUDENT GAMMA <<<"
-            },
-            {
-                "usn": "ID-999-004",
-                "name": ">>> ANDROID STUDENT DELTA <<<"
-            }
+            { "usn": "ID-999-001", "name": ">>> ALIEN STUDENT ALPHA <<<" },
+            { "usn": "ID-999-002", "name": ">>> CYBORG STUDENT BETA <<<" },
+            { "usn": "ID-999-003", "name": ">>> MUTANT STUDENT GAMMA <<<" },
+            { "usn": "ID-999-004", "name": ">>> ANDROID STUDENT DELTA <<<" }
         ],
 
         "guides": [
@@ -63,50 +51,30 @@
             "principal": {
                 "name": "Dr. Ajayan K R",
                 "designation": "Principal"
-            },
-            "external_examiners": [
-                {
-                    "label": "Name of examiners",
-                    "signature_placeholder": "Signature with date"
-                }
-            ]
+            }
         }
     },
 
     "certificate_info": {
         "project_type": "Mini Project",
-        "certificate_title": "CERTIFICATE"
+        "certificate_title": "CERTIFICATE",
+        "guide_name": "Prof. Albus Dumbledore",
+        "hod_name": "Dr. Dummy HOD",
+        "dean_name": "Dr. Dummy Dean",
+        "guide_designation": "Assistant Professor\nDepartment of CSE",
+        "hod_designation": "Assistant Professor\nDepartment of CSE",
+        "dean_designation": "Dean, School of CSE\nMVJCE"
     },
 
     "report_content": {
-        "abstract": {
-            "text": "This study investigates..."
-        },
+        "abstract": { "text": "This study investigates..." },
         "acknowledgement": {
             "standard_text": "We are thankful to {principal_name}, Principal of {college_name} for his encouragement..."
         },
         "declaration": {
             "text": "We, students of {semester} semester B.E., Department of {department_name}, {college_name}, hereby declare that..."
         },
-        "system_configuration": {
-            "hardware": [
-                "Processor: Intel i5/Ryzen 5 or higher (2.4 GHz+)",
-                "RAM: 8 GB (16 GB recommended)",
-                "Storage: At least 50 GB free (SSD preferred)"
-            ],
-            "software": [
-                "Frontend: React.js, Vue.js, or Angular",
-                "Backend: Spring Boot or Node.js",
-                "Database: MongoDB (or MySQL/PostgreSQL)"
-            ]
-        },
-        "chapters": [
-            {
-                "chapter_number": 1,
-                "title": "INTRODUCTION",
-                "sections": []
-            }
-        ],
+        "chapters": [],
         "references": []
     }
 }
