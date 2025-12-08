@@ -39,7 +39,7 @@ def update_project_doc_with_dummies(input_path):
 
     # --- LOAD JSON DATA ---
     import json
-    json_path = r"D:\Model\REPORT1\AutomatedReportGenerator\backend\data\full_report_template.json"
+    json_path = r"C:\\Users\\sumam\OneDrive\\Documents\\ReportMaker\\reportauto\\backend\\data\\full_report_template.json"
     
     try:
         with open(json_path, 'r', encoding='utf-8') as f:
@@ -172,5 +172,5 @@ def update_project_doc_with_dummies(input_path):
     print(f"Dummy-fixed file saved as: {output_path}")
 
 # --- RUN ---
-input_file = r"D:\Model\REPORT1\AutomatedReportGenerator\backend\templates\senior_project_template.docx"
+input_file = r"C:\\Users\\sumam\\OneDrive\\Documents\\senior_project_template.docx"
 update_project_doc_with_dummies(input_file)

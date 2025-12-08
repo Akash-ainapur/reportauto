@@ -10,13 +10,16 @@
         "department_name": "DEPARTMENT OF QUANTUM COMPUTING",
         "department_abbr": "DQC",
         "city_code": "MARS COLONY - 001",
-        "pincode": "999999"
+        "pincode": "999999",
+        "college_address": "Near ITPB, Whitefield, Bangalore – 560067"
     },
+
     "submission_info": {
         "date": "[DATE]",
         "place": "BANGALORE",
         "academic_year_range": "2024-2025"
     },
+
     "people": {
         "students": [
             {
@@ -36,6 +39,7 @@
                 "name": ">>> ANDROID STUDENT DELTA <<<"
             }
         ],
+
         "guides": [
             {
                 "name": ">>> PROF. DUMBLEDORE <<<",
@@ -44,6 +48,7 @@
                 "role": "Internal Guide"
             }
         ],
+
         "approvers": {
             "hod": {
                 "name": "Dr. Kiran Babu T S",
@@ -67,6 +72,12 @@
             ]
         }
     },
+
+    "certificate_info": {
+        "project_type": "Mini Project",
+        "certificate_title": "CERTIFICATE"
+    },
+
     "report_content": {
         "abstract": {
             "text": "This study investigates..."

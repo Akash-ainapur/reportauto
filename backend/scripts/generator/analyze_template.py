@@ -36,5 +36,5 @@ def detailed_scan(path):
              print(f"  R{r}: {[c.text.strip()[:20] for c in row.cells]}")
 
 if __name__ == "__main__":
-    path = r"d:\Model\REPORT1\AutomatedReportGenerator\backend\templates\senior_project_template.docx"
+    path = r"C:\\Users\\sumam\\OneDrive\\Documents\\senior_project_template.docx"
     detailed_scan(path)
