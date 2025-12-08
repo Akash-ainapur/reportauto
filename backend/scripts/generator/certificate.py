@@ -187,16 +187,24 @@ def rebuild_signature_block(doc, cert):
 # Main Generator
 # -------------------------------------------------
 def update_certificate_page(input_path):
+    # Get the directory of the current script
+    current_script_dir = os.path.dirname(os.path.abspath(__file__))
+    # Go up 3 levels to get to project root (generator -> scripts -> backend -> root)
+    project_root = os.path.dirname(os.path.dirname(os.path.dirname(current_script_dir)))
+    
+    # Establish output directory
+    output_dir = os.path.join(project_root, "output")
+    os.makedirs(output_dir, exist_ok=True)
+
+    filename = os.path.basename(input_path)
+    base, ext = os.path.splitext(filename)
+    output_filename = f"{base}_filled{ext}"
+    output_path = os.path.join(output_dir, output_filename)
+
     doc = Document(input_path)
 
-    base, ext = os.path.splitext(input_path)
-    output_path = base.replace(
-        "senior_project_template",
-        "senior_project_certificate_filled"
-    ) + ext
-
     # Load JSON
-    json_path = r"C:\\Users\\sumam\\OneDrive\\Documents\\ReportMaker\\reportauto\\backend\\data\\full_report_template.json"
+    json_path = os.path.join(project_root, "backend", "data", "full_report_template.json")
     with open(json_path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
@@ -233,5 +241,12 @@ def update_certificate_page(input_path):
 # Run
 # -------------------------------------------------
 if __name__ == "__main__":
-    input_file = r"C:\\Users\\sumam\\OneDrive\\Documents\\senior_project_template (2).docx"
-    update_certificate_page(input_file)
+    # Calculate input file path dynamically
+    current_script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(os.path.dirname(os.path.dirname(current_script_dir)))
+    input_file = os.path.join(project_root, "backend", "templates", "template_indivisual", "senior_project_template (2).docx")
+    
+    if os.path.exists(input_file):
+        update_certificate_page(input_file)
+    else:
+        print(f"Error: Template file not found at {input_file}")
