@@ -35,10 +35,7 @@ def add_page_border(section):
 # -------------------------------------------------
 # Rebuild Signature Block (CORRECT & SAFE)
 # -------------------------------------------------
-# -------------------------------------------------
-# Rebuild Signature Block (CORRECT & SAFE)
-# -------------------------------------------------
-def rebuild_signature_block(doc, cert, meta):
+def rebuild_signature_block(doc, cert):
     # Try finding the signature in a table first
     signature_row = None
     for table in doc.tables:
@@ -53,15 +50,6 @@ def rebuild_signature_block(doc, cert, meta):
         if signature_row:
             break
 
-    # Helper to apply metadata replacements to signature text
-    def clean_text(text):
-        if not text: return ""
-        # specific replacements
-        dept_short = meta.get("department_short", "Department of Universal Logic")
-        text = text.replace("Department of CSE", dept_short)
-        text = text.replace("Department of Universal Logic", dept_short) # In case JSON has hardcoded old default
-        return text
-
     if signature_row:
         print("✅ Found signature block in table. Updating...")
         
@@ -71,9 +59,9 @@ def rebuild_signature_block(doc, cert, meta):
         
         # Data mapping
         items = [
-            ("Signature of Guide", clean_text(cert["guide_name"]), clean_text(cert["guide_designation"])),
-            ("Signature of HOD",   clean_text(cert["hod_name"]),   clean_text(cert["hod_designation"])),
-            ("Signature of Dean",  clean_text(cert["dean_name"]),  clean_text(cert["dean_designation"]))
+            ("Signature of Guide", cert["guide_name"], cert["guide_designation"]),
+            ("Signature of HOD",   cert["hod_name"],   cert["hod_designation"]),
+            ("Signature of Dean",  cert["dean_name"],  cert["dean_designation"])
         ]
 
         # Ensure we have enough cells
@@ -156,14 +144,14 @@ def rebuild_signature_block(doc, cert, meta):
 
     headers = ["Signature of Guide", "Signature of HOD", "Signature of Dean"]
     names = [
-        clean_text(cert["guide_name"]),
-        clean_text(cert["hod_name"]),
-        clean_text(cert["dean_name"])
+        cert["guide_name"],
+        cert["hod_name"],
+        cert["dean_name"]
     ]
     designations = [
-        clean_text(cert["guide_designation"]),
-        clean_text(cert["hod_designation"]),
-        clean_text(cert["dean_designation"])
+        cert["guide_designation"],
+        cert["hod_designation"],
+        cert["dean_designation"]
     ]
 
     # Header row (BOLD)
@@ -223,138 +211,24 @@ def update_certificate_page(input_path):
     meta = data["global_metadata"]
     cert = data["certificate_info"]
 
-    from docx.shared import RGBColor
-    import re
-
-    def replace_chunk_with_format(paragraph, old_text, new_text, is_regex=False, 
-                               bold=False, size=None, color=None):
-        if not paragraph.runs:
-            return
-
-        # 1. Capture state of existing runs
-        run_data = []
-        for r in paragraph.runs:
-            run_data.append({
-                "text": r.text,
-                "bold": r.bold,
-                "italic": r.italic,
-                "underline": r.underline,
-                "font_name": r.font.name,
-                "font_size": r.font.size,
-                "font_color": r.font.color.rgb,
-                "original_run": r
-            })
-        
-        full_text = "".join(d["text"] for d in run_data)
-        
-        # 2. Find match
-        match_start = -1
-        match_end = -1
-        
-        if is_regex:
-            match = re.search(old_text, full_text, flags=re.IGNORECASE)
-            if match:
-                match_start = match.start()
-                match_end = match.end()
-        else:
-            match_start = full_text.find(old_text)
-            if match_start != -1:
-                match_end = match_start + len(old_text)
-                
-        if match_start == -1:
-            return
-
-        # 3. Clear existing runs
-        for r in paragraph.runs:
-            r.text = ""
-            
-        # 4. Rebuild runs
-        current_pos = 0
-        
-        for r_item in run_data:
-            r_text = r_item["text"]
-            r_len = len(r_text)
-            r_end = current_pos + r_len
-            
-            # Helper to create run with copied props
-            def add_run_copy_props(text):
-                nr = paragraph.add_run(text)
-                nr.bold = r_item["bold"]
-                nr.italic = r_item["italic"]
-                nr.underline = r_item["underline"]
-                if r_item["font_name"]: nr.font.name = r_item["font_name"]
-                if r_item["font_size"]: nr.font.size = r_item["font_size"]
-                if r_item["font_color"]: nr.font.color.rgb = r_item["font_color"]
-                return nr
-
-            # Case A: Run is completely before match
-            if r_end <= match_start:
-                 add_run_copy_props(r_text)
-                 
-            # Case B: Run is completely after match
-            elif current_pos >= match_end:
-                 add_run_copy_props(r_text)
-                 
-            # Case C: Overlap
-            else:
-                # Sub-case: Part before match
-                if current_pos < match_start:
-                    start_offset = 0
-                    end_offset = match_start - current_pos
-                    text_chunk = r_text[start_offset:end_offset]
-                    if text_chunk:
-                        add_run_copy_props(text_chunk)
-                
-                # Sub-case: The Match Itself (Insert ONLY ONCE when we hit the start)
-                if current_pos <= match_start < r_end:
-                     target_run = paragraph.add_run(new_text)
-                     # Apply requested formatting or inherit
-                     target_run.bold = True if bold else r_item["bold"]
-                     if size: target_run.font.size = Pt(size)
-                     if color: target_run.font.color.rgb = color
-                
-                # Sub-case: Part after match
-                if r_end > match_end:
-                    start_offset = match_end - current_pos
-                    if start_offset < 0: start_offset = 0
-                    text_chunk = r_text[start_offset:]
-                    if text_chunk:
-                        add_run_copy_props(text_chunk)
-                        
-            current_pos += r_len
-
-
-    # Replacements with styling
-    styled_replacements = [
-        # College Name: Bold, Size 18
-        ("MVJ COLLEGE OF ENGINEERING", meta["college_name"], False, True, 18, None),
-        
-        # Dept Name Header: Bold, Size 14
-        ("DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING", meta["department_name"].upper(), False, True, 14, None),
-        
-        # Body Dept Name: Replace "Computer science and Engineering" with anonymous name
-        ("Computer science and Engineering", meta.get("department_short", "Dept of Universal Logic"), False, False, None, None),
-        
-        # Major -> Mini replacement
-        (r"Major",meta["project_type"], True, False, None, None),
-        
-        # Academic Year
-        ("2024 - 2025", meta["academic_year"], False, False, None, None),
-        
-        # Address
-        ("Near ITPB, Whitefield, Bangalore – 560067", meta["college_address"], False, False, None, None),
-
-        # Project Title: Red and Bold, with quotes
-        # MOVED TO END: To ensure its styling isn't overwritten by other replacements in same paragraph
-        (r"[\"“]?\s*MVJ\s*NEXTGEN\s*EDUCLOUD[:\s-]+AI[:\s-]+BASED\s*ACADEMIC\s*RESOURCE\s*MANAGER\s*[\"”]?", f'"{meta["project_title"]}"', True, True, None, RGBColor(255, 0, 0))
-    ]
+    # Body replacements (NON-SIGNATURE)
+    replacements = {
+        "MVJ COLLEGE OF ENGINEERING": meta["college_name"],
+        "Near ITPB, Whitefield, Bangalore – 560067": meta["college_address"],
+        "DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING": meta["department_name"],
+        "MVJ NEXTGEN EDUCLOUD:AI-BASED ACADEMIC RESOURCE MANAGER": meta["project_title"],
+        "2024 - 2025": meta["academic_year"],
+        "Major Project": cert["project_type"],
+        "Major project": cert["project_type"]
+    }
 
     for p in doc.paragraphs:
-        for search, replace, is_re, bold, size, color in styled_replacements:
-             replace_chunk_with_format(p, search, replace, is_re, bold, size, color)
+        for old, new in replacements.items():
+            if old in p.text:
+                p.text = p.text.replace(old, new)
 
     # ✅ Rebuild signature block (FIX)
-    rebuild_signature_block(doc, cert, meta)
+    rebuild_signature_block(doc, cert)
 
     # Add page border
     add_page_border(doc.sections[0])
@@ -370,7 +244,7 @@ if __name__ == "__main__":
     # Calculate input file path dynamically
     current_script_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.dirname(os.path.dirname(os.path.dirname(current_script_dir)))
-    input_file = os.path.join(project_root, "backend", "templates", "template_indivisual", "certificate.docx")
+    input_file = os.path.join(project_root, "backend", "templates", "template_indivisual", "senior_project_template (2).docx")
     
     if os.path.exists(input_file):
         update_certificate_page(input_file)
