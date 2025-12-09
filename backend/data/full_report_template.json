@@ -5,69 +5,90 @@
         "project_subtitle": ">>> TEST_SUBTITLE: AUTOMATED GENERATION PROTOCOL v9.9 <<<",
         "domain": "INTERPLANETARY AI",
         "academic_year": "3024 - 3025",
-        "semester": "X",
+        "semester": "Fifth",
         "college_name": "GALACTIC INSTITUTE OF TECHNOLOGY",
         "department_name": "DEPARTMENT OF QUANTUM COMPUTING",
         "department_abbr": "DQC",
+        "department_short": "Department of Universal logic",
         "city_code": "MARS COLONY - 001",
         "pincode": "999999",
-        "college_address": "Near ITPB, Whitefield, Bangalore – 560067"
+        "college_address": "Near ITPB, Whitefield, Bangalore – 560067",
+        "project_type": "Mini"
     },
-
+    "styles": {
+        "project_title": 16,
+        "project_subtitle": 14,
+        "student_details": 14,
+        "guide_name": 14,
+        "guide_label": 14,
+        "header_footer": 10
+    },
     "submission_info": {
         "date": "[DATE]",
         "place": "BANGALORE",
         "academic_year_range": "2024-2025"
     },
-
     "people": {
         "students": [
-            { "usn": "ID-999-001", "name": ">>> ALIEN STUDENT ALPHA <<<" },
-            { "usn": "ID-999-002", "name": ">>> CYBORG STUDENT BETA <<<" },
-            { "usn": "ID-999-003", "name": ">>> MUTANT STUDENT GAMMA <<<" },
-            { "usn": "ID-999-004", "name": ">>> ANDROID STUDENT DELTA <<<" }
-        ],
-
-        "guides": [
             {
-                "name": ">>> PROF. DUMBLEDORE <<<",
+                "usn": "ID-999-001",
+                "name": "Akshay"
+            },
+            {
+                "usn": "ID-999-002",
+                "name": "Akash Ainapur"
+            },
+            {
+                "usn": "ID-999-003",
+                "name": "Debaditya Das"
+            },
+            {
+                "usn": "ID-999-004",
+                "name": "Basavaraj"
+            }
+        ],
+        "guide": [
+            {
+                "name": "PROF. DUMBLEDORE",
                 "designation": "HEAD WIZARD",
-                "department": "DEPT OF MAGIC",
+                "department": "ECE Department",
                 "role": "Internal Guide"
             }
         ],
-
         "approvers": {
             "hod": {
-                "name": "Dr. Kiran Babu T S",
+                "name": "Dr. Rekha Poral",
                 "designation": "Professor & Head",
-                "department": "Department of CSE"
+                "department": "ECE Department"
             },
             "dean": {
-                "name": "Dr. I Hameem Shanavas",
+                "name": "Dr. Mohammad",
                 "designation": "Dean",
                 "school": "School of CSE"
             },
             "principal": {
-                "name": "Dr. Ajayan K R",
+                "name": "Dr. Alil Ahammed",
                 "designation": "Principal"
+            },
+            "COE": {
+                "name": "Mr. Alahumad"
             }
         }
     },
-
     "certificate_info": {
         "project_type": "Mini Project",
         "certificate_title": "CERTIFICATE",
         "guide_name": "Prof. Albus Dumbledore",
         "hod_name": "Dr. Dummy HOD",
         "dean_name": "Dr. Dummy Dean",
-        "guide_designation": "Assistant Professor\nDepartment of CSE",
-        "hod_designation": "Assistant Professor\nDepartment of CSE",
+        "guide_designation": "Assistant Professor\nDepartment of Universal Logic",
+        "hod_designation": "Assistant Professor\nDepartment of Universal Logic",
         "dean_designation": "Dean, School of CSE\nMVJCE"
     },
-
     "report_content": {
-        "abstract": { "text": "This study investigates..." },
+        "abstract": {
+            "text": "This study investigates..."
+        },
         "acknowledgement": {
             "standard_text": "We are thankful to {principal_name}, Principal of {college_name} for his encouragement..."
         },
