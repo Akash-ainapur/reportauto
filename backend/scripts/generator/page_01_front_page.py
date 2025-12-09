@@ -1,18 +1,45 @@
 from docx import Document
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
+from docx.shared import Pt
 import os
 import re
 
-def replace_text_runs(paragraph, old, new):
-    """Replace text even if split across runs."""
+def replace_text_runs(paragraph, old, new, font_size=None):
+    """Replace text even if split across runs, optionally setting font size."""
     full_text = "".join(run.text for run in paragraph.runs)
     if old in full_text:
         new_text = full_text.replace(old, new)
         # clear all runs and write new text to first run
         for run in paragraph.runs:
             run.text = ""
-        paragraph.runs[0].text = new_text
+        run = paragraph.runs[0]
+        run.text = new_text
+        if font_size:
+            run.font.size = Pt(font_size)
+
+def replace_with_bold(paragraph, old, new, font_size=None):
+    """Replaces text and makes the new text bold, optionally setting font size."""
+    full_text = "".join(run.text for run in paragraph.runs)
+    if old in full_text:
+        # Split text by the old string
+        parts = full_text.split(old)
+        
+        # Clear existing runs
+        for run in paragraph.runs:
+            run.text = ""
+            
+        # Reconstruct with bold part
+        # Note: This simple split handles one occurrence or multiple. 
+        # Ideally, we reconstruct: part[0] + OLD(bold) + part[1] ...
+        
+        for i, part in enumerate(parts):
+            paragraph.add_run(part)
+            if i < len(parts) - 1:
+                run = paragraph.add_run(new)
+                run.bold = True
+                if font_size:
+                    run.font.size = Pt(font_size)
 
 def add_page_number(paragraph):
     """Adds dynamic PAGE field to footer paragraph."""
@@ -59,25 +86,41 @@ def update_project_doc_with_dummies(input_path):
         return
 
     meta = data["global_metadata"]
-    guides = data["people"]["guides"][0]
+    guide = data["people"]["guide"][0]
+    styles = data.get("styles", {})
     
     # --- TEXT REPLACEMENTS MAPPING ---
     replacements = {
         "A PROJECT PHASE I REPORT": "Makabulla Project Phase I Report",
         "HAZARD WASTE DETECTION USING AI AND IOT": meta["project_title"],
         "MVJ NEXTGEN EDUCLOUD:AI-BASED ACADEMIC RESOURCE MANAGER": meta["project_subtitle"],
-        "BACHELOR OF ENGINEERING": "BACHELOR OF ENGINEERING", # Usually static, or add to JSON if needed
-        "COMPUTER SCIENCE & ENGINEERING": meta["department_name"].replace("DEPARTMENT OF ", ""), # or just use meta['department_abbr']
+        "BACHELOR OF ENGINEERING": "BACHELOR OF ENGINEERING",
+        "COMPUTER SCIENCE & ENGINEERING": meta["department_name"].replace("DEPARTMENT OF ", ""),
         "DEPARTMENT OF COMPUTER SCIENCE & ENGINEERING": meta["department_name"],
         "MVJ COLLEGE OF ENGINEERING": meta["college_name"],
         "BANGALORE - 67": meta["city_code"],
         "ACADEMIC YEAR 2024 - 2025": f"ACADEMIC YEAR {meta['academic_year']}",
         
         # Guide Details
-        "Mrs. Sumanjali": guides["name"],
-        "Sumanjali": guides["name"],
-        "Assistant Professor, Department of CSE": f"{guides['designation']}, {guides['department']}",
+        "Assistant Professor, Department of CSE": f"{guide['designation'].title()}, {guide['department'].title()}",
+        
+        # Static Text Styling
+        "Under the Guidance of": "Under the Guidance of",
     }
+
+    # Guide names for bold replacement
+    guide_name_placeholders = ["Mrs. Sumanjali", "Sumanjali"]
+    guide_name_new = guide["name"]
+
+    # Style mapping for specific placeholders
+    placeholder_styles = {
+        "HAZARD WASTE DETECTION USING AI AND IOT": styles.get("project_title"),
+        "MVJ NEXTGEN EDUCLOUD:AI-BASED ACADEMIC RESOURCE MANAGER": styles.get("project_subtitle"),
+        "Under the Guidance of": styles.get("guide_label"),
+    }
+    
+    # Guide name style
+    guide_style = styles.get("guide_name")
 
     # --- Replace text in paragraphs (FRONT PAGE ONLY) ---
     # We assume the front page is the first section or explicitly the first page logic.
@@ -97,8 +140,14 @@ def update_project_doc_with_dummies(input_path):
         if "CERTIFICATE" in para.text.upper():
             break
             
+        # Standard replacements
         for old, new in replacements.items():
-            replace_text_runs(para, old, new)
+            font_sz = placeholder_styles.get(old)
+            replace_text_runs(para, old, new, font_size=font_sz)
+            
+        # Bold replacements for guide name
+        for old_name in guide_name_placeholders:
+            replace_with_bold(para, old_name, guide_name_new, font_size=guide_style)
 
     # --- Replace text inside tables (FRONT PAGE ONLY) ---
     # The first table is the student list on the front page.
@@ -116,20 +165,33 @@ def update_project_doc_with_dummies(input_path):
     if doc.tables:
         table = doc.tables[0]
         students = data["people"]["students"]
+        student_font_size = styles.get("student_details")
+        
         for i, stud in enumerate(students):
             if i < len(table.rows):
 
                 # Update USN with bold formatting
                 cell_usn = table.cell(i, 0)
-                cell_usn.text = "" # Clear existing content
-                run_usn = cell_usn.paragraphs[0].add_run(stud["usn"])
-                run_usn.bold = True
+                # Preserving paragraph formatting by clearing runs instead of cell.text
+                if cell_usn.paragraphs:
+                    p = cell_usn.paragraphs[0]
+                    for run in p.runs:
+                        run.text = ""
+                    run_usn = p.add_run(stud["usn"])
+                    run_usn.bold = True
+                    if student_font_size:
+                        run_usn.font.size = Pt(student_font_size)
                 
                 # Update Name with bold formatting
                 cell_name = table.cell(i, 1)
-                cell_name.text = "" # Clear existing content
-                run_name = cell_name.paragraphs[0].add_run(stud["name"])
-                run_name.bold = True
+                if cell_name.paragraphs:
+                    p = cell_name.paragraphs[0]
+                    for run in p.runs:
+                        run.text = ""
+                    run_name = p.add_run(stud["name"])
+                    run_name.bold = True
+                    if student_font_size:
+                        run_name.font.size = Pt(student_font_size)
 
     # --- HEADER (FRONT PAGE ONLY) ---
     # Usually Front Page has a separate header/footer or First Page Header.
