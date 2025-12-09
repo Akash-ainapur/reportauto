@@ -1,19 +1,19 @@
 {
     "__comment": "Master Data Source for Automated Report Generation",
     "global_metadata": {
-        "project_title": "Autodeployment tool",
-        "project_subtitle": "",
-        "domain": "Artificial Intelligence",
-        "academic_year": "2025-2026",
-        "semester": "seventh",
-        "college_name": "RNS Institute Of Technology",
-        "department_name": "Department of ECE",
-        "department_abbr": "CSE",
-        "department_short": "Department of ECE",
-        "city_code": "Near ITPB, Whitefield, Bangalore \u00e2\u20ac\u201c 560067",
+        "project_title": "!!! PROJECT OMEGA: AI-DRIVEN WORLD DOMINATION !!!",
+        "project_subtitle": ">>> TEST_SUBTITLE: AUTOMATED GENERATION PROTOCOL v9.9 <<<",
+        "domain": "INTERPLANETARY AI",
+        "academic_year": "3024 - 3025",
+        "semester": "Fifth",
+        "college_name": "GALACTIC INSTITUTE OF TECHNOLOGY",
+        "department_name": "DEPARTMENT OF QUANTUM COMPUTING",
+        "department_abbr": "DQC",
+        "department_short": "Department of Universal logic",
+        "city_code": "MARS COLONY - 001",
         "pincode": "999999",
-        "college_address": "Near ITPB, Whitefield, Bangalore \u00e2\u20ac\u201c 560067",
-        "project_type": "MajorMini"
+        "college_address": "Near ITPB, Whitefield, Bangalore – 560067",
+        "project_type": "Mini"
     },
     "styles": {
         "project_title": 16,
@@ -24,33 +24,33 @@
         "header_footer": 10
     },
     "submission_info": {
-        "date": "12/02/2025",
+        "date": "[DATE]",
         "place": "BANGALORE",
         "academic_year_range": "2024-2025"
     },
     "people": {
         "students": [
             {
-                "usn": "1MJ23CS011",
+                "usn": "ID-999-001",
                 "name": "Akshay"
             },
             {
-                "usn": "1MJ23CS012",
+                "usn": "ID-999-002",
                 "name": "Akash Ainapur"
             },
             {
-                "usn": "1MJ23CS013",
+                "usn": "ID-999-003",
                 "name": "Debaditya Das"
             },
             {
-                "usn": "1MJ23CS014",
+                "usn": "ID-999-004",
                 "name": "Basavaraj"
             }
         ],
         "guide": [
             {
-                "name": "Prof. Arfa Bandari",
-                "designation": "Assistant Professor",
+                "name": "PROF. DUMBLEDORE",
+                "designation": "HEAD WIZARD",
                 "department": "ECE Department",
                 "role": "Internal Guide"
             }
