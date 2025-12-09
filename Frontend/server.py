@@ -3,6 +3,7 @@ import socketserver
 import json
 import os
 import sys
+import subprocess
 
 # Ensure we are running from the project root
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -53,6 +54,49 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 self.send_header('Content-type', 'application/json')
                 self.end_headers()
                 self.wfile.write(json.dumps({'status': 'success', 'message': 'Data saved successfully'}).encode())
+            except Exception as e:
+                self.send_response(500)
+                self.send_header('Content-type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps({'status': 'error', 'message': str(e)}).encode())
+            return
+        
+        elif self.path == '/api/generate-report':
+            try:
+                # Path to the v2 main.py
+                script_path = os.path.join(PROJECT_ROOT, 'backend', 'scripts', 'v2_architecture', 'main.py')
+                
+                # Run the script
+                env = os.environ.copy()
+                env['PYTHONIOENCODING'] = 'utf-8'
+
+                result = subprocess.run(
+                    [sys.executable, script_path],
+                    cwd=PROJECT_ROOT, # Run from project root so imports work
+                    capture_output=True,
+                    text=True,
+                    encoding='utf-8',
+                    env=env
+                )
+                
+                if result.returncode == 0:
+                    self.send_response(200)
+                    self.send_header('Content-type', 'application/json')
+                    self.end_headers()
+                    self.wfile.write(json.dumps({
+                        'status': 'success', 
+                        'message': 'Report generated successfully!',
+                        'output': result.stdout
+                    }).encode())
+                else:
+                    self.send_response(500)
+                    self.send_header('Content-type', 'application/json')
+                    self.end_headers()
+                    self.wfile.write(json.dumps({
+                        'status': 'error', 
+                        'message': 'Script failed',
+                        'output': result.stderr
+                    }).encode())
             except Exception as e:
                 self.send_response(500)
                 self.send_header('Content-type', 'application/json')

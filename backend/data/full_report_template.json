@@ -1,10 +1,10 @@
 {
     "__comment": "Master Data Source for Automated Report Generation",
     "global_metadata": {
-        "project_title": "!!! PROJECT OMEGA: AI-DRIVEN WORLD DOMINATION !!!",
-        "project_subtitle": ">>> TEST_SUBTITLE: AUTOMATED GENERATION PROTOCOL v9.9 <<<",
-        "domain": "INTERPLANETARY AI",
-        "academic_year": "3024 - 3025",
+        "project_title": "Makabulla kelsa illa",
+        "project_subtitle": "idk what the f is yhis project",
+        "domain": "dancer",
+        "academic_year": "2026-89",
         "semester": "Fifth",
         "college_name": "GALACTIC INSTITUTE OF TECHNOLOGY",
         "department_name": "DEPARTMENT OF QUANTUM COMPUTING",
@@ -12,7 +12,7 @@
         "department_short": "Department of Universal logic",
         "city_code": "MARS COLONY - 001",
         "pincode": "999999",
-        "college_address": "Near ITPB, Whitefield, Bangalore – 560067",
+        "college_address": "Near ITPB, Whitefield, Bangalore \u00e2\u20ac\u201c 560067",
         "project_type": "Mini"
     },
     "styles": {
@@ -36,7 +36,7 @@
             },
             {
                 "usn": "ID-999-002",
-                "name": "Akash Ainapur"
+                "name": "aka thugesh"
             },
             {
                 "usn": "ID-999-003",
@@ -44,14 +44,14 @@
             },
             {
                 "usn": "ID-999-004",
-                "name": "Basavaraj"
+                "name": "basuuu"
             }
         ],
         "guide": [
             {
                 "name": "PROF. DUMBLEDORE",
                 "designation": "HEAD WIZARD",
-                "department": "ECE Department",
+                "department": "department of outer space",
                 "role": "Internal Guide"
             }
         ],
@@ -76,7 +76,7 @@
         }
     },
     "certificate_info": {
-        "project_type": "Mini Project",
+        "project_type": "bada project",
         "certificate_title": "CERTIFICATE",
         "guide_name": "Prof. Albus Dumbledore",
         "hod_name": "Dr. Dummy HOD",

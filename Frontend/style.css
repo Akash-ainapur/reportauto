@@ -212,8 +212,9 @@ textarea {
     pointer-events: none; /* Let clicks pass through empty space */
 }
 
-button[type="submit"] {
-    pointer-events: auto; /* Re-enable pointer events for button */
+/* Shared Button Styles */
+.action-btn {
+    pointer-events: auto;
     background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
     color: white;
     font-size: 1rem;
@@ -231,18 +232,30 @@ button[type="submit"] {
     gap: 10px;
 }
 
-button[type="submit"]::before {
-    content: '💾';
-    font-size: 1.2rem;
-}
-
-button[type="submit"]:hover {
+.action-btn:hover {
     transform: translateY(-3px) scale(1.02);
     box-shadow: 0 20px 30px -10px rgba(99, 102, 241, 0.5);
 }
 
-button[type="submit"]:active {
+.action-btn:active {
     transform: translateY(-1px);
+}
+
+.action-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Specific Icons */
+#saveBtn::before {
+    content: '💾';
+    font-size: 1.2rem;
+}
+
+#generateBtn::before {
+    content: '📄';
+    font-size: 1.2rem;
 }
 
 /* Toast */
@@ -271,6 +284,10 @@ button[type="submit"]:active {
     background-color: var(--error);
 }
 
+.info {
+    background-color: var(--primary);
+}
+
 .show-toast {
     transform: translateY(0) !important;
 }
@@ -289,7 +306,7 @@ button[type="submit"]:active {
         padding: 20px;
     }
     
-    button[type="submit"] {
+    .action-btn {
         width: 100%;
         justify-content: center;
     }

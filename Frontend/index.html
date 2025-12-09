@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Report Configuration Editor</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <div class="container">
         <header class="header">
@@ -52,7 +54,7 @@
                         <label for="department_abbr">Dept Abbr</label>
                         <input type="text" id="department_abbr" name="global_metadata.department_abbr">
                     </div>
-                     <div class="form-group">
+                    <div class="form-group">
                         <label for="department_short">Dept Short Name</label>
                         <input type="text" id="department_short" name="global_metadata.department_short">
                     </div>
@@ -89,7 +91,7 @@
                         <label for="style_project_subtitle">Project Subtitle Size</label>
                         <input type="number" id="style_project_subtitle" name="styles.project_subtitle">
                     </div>
-                     <div class="form-group">
+                    <div class="form-group">
                         <label for="style_student_details">Student Details Size</label>
                         <input type="number" id="style_student_details" name="styles.student_details">
                     </div>
@@ -108,8 +110,8 @@
                 </div>
             </section>
 
-             <!-- Submission Info -->
-             <section id="submission_info">
+            <!-- Submission Info -->
+            <section id="submission_info">
                 <div class="section-header">
                     <h2>Submission Info</h2>
                 </div>
@@ -139,8 +141,8 @@
                 </div>
             </section>
 
-             <!-- Guide -->
-             <section id="guide_section">
+            <!-- Guide -->
+            <section id="guide_section">
                 <div class="section-header">
                     <h2>Internal Guide</h2>
                 </div>
@@ -158,31 +160,31 @@
                     <!-- HOD -->
                     <div class="array-item">
                         <h4>HOD</h4>
-                         <div class="form-group">
+                        <div class="form-group">
                             <label>Name</label>
                             <input type="text" name="people.approvers.hod.name">
                         </div>
-                         <div class="form-group">
+                        <div class="form-group">
                             <label>Designation</label>
                             <input type="text" name="people.approvers.hod.designation">
                         </div>
-                         <div class="form-group">
+                        <div class="form-group">
                             <label>Department</label>
                             <input type="text" name="people.approvers.hod.department">
                         </div>
                     </div>
                     <!-- Dean -->
-                     <div class="array-item">
+                    <div class="array-item">
                         <h4>Dean</h4>
-                         <div class="form-group">
+                        <div class="form-group">
                             <label>Name</label>
                             <input type="text" name="people.approvers.dean.name">
                         </div>
-                         <div class="form-group">
+                        <div class="form-group">
                             <label>Designation</label>
                             <input type="text" name="people.approvers.dean.designation">
                         </div>
-                         <div class="form-group">
+                        <div class="form-group">
                             <label>School</label>
                             <input type="text" name="people.approvers.dean.school">
                         </div>
@@ -190,19 +192,19 @@
                     <!-- Principal -->
                     <div class="array-item">
                         <h4>Principal</h4>
-                         <div class="form-group">
+                        <div class="form-group">
                             <label>Name</label>
                             <input type="text" name="people.approvers.principal.name">
                         </div>
-                         <div class="form-group">
+                        <div class="form-group">
                             <label>Designation</label>
                             <input type="text" name="people.approvers.principal.designation">
                         </div>
                     </div>
                     <!-- COE -->
-                     <div class="array-item">
+                    <div class="array-item">
                         <h4>COE</h4>
-                         <div class="form-group">
+                        <div class="form-group">
                             <label>Name</label>
                             <input type="text" name="people.approvers.COE.name">
                         </div>
@@ -218,63 +220,68 @@
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="cert_project_type">Project Type</label>
-                         <input type="text" id="cert_project_type" name="certificate_info.project_type">
+                        <input type="text" id="cert_project_type" name="certificate_info.project_type">
                     </div>
                     <div class="form-group">
                         <label for="cert_title">Title</label>
-                         <input type="text" id="cert_title" name="certificate_info.certificate_title">
+                        <input type="text" id="cert_title" name="certificate_info.certificate_title">
                     </div>
                     <div class="form-group">
                         <label for="cert_guide_name">Guide Name</label>
-                         <input type="text" id="cert_guide_name" name="certificate_info.guide_name">
+                        <input type="text" id="cert_guide_name" name="certificate_info.guide_name">
                     </div>
                     <div class="form-group">
                         <label for="cert_guide_desig">Guide Designation</label>
-                         <textarea id="cert_guide_desig" name="certificate_info.guide_designation"></textarea>
+                        <textarea id="cert_guide_desig" name="certificate_info.guide_designation"></textarea>
                     </div>
                     <div class="form-group">
                         <label for="cert_hod_name">HOD Name</label>
-                         <input type="text" id="cert_hod_name" name="certificate_info.hod_name">
+                        <input type="text" id="cert_hod_name" name="certificate_info.hod_name">
                     </div>
-                     <div class="form-group">
+                    <div class="form-group">
                         <label for="cert_hod_desig">HOD Designation</label>
-                         <textarea id="cert_hod_desig" name="certificate_info.hod_designation"></textarea>
+                        <textarea id="cert_hod_desig" name="certificate_info.hod_designation"></textarea>
                     </div>
-                     <div class="form-group">
+                    <div class="form-group">
                         <label for="cert_dean_name">Dean Name</label>
-                         <input type="text" id="cert_dean_name" name="certificate_info.dean_name">
+                        <input type="text" id="cert_dean_name" name="certificate_info.dean_name">
                     </div>
-                     <div class="form-group">
+                    <div class="form-group">
                         <label for="cert_dean_desig">Dean Designation</label>
-                         <textarea id="cert_dean_desig" name="certificate_info.dean_designation"></textarea>
+                        <textarea id="cert_dean_desig" name="certificate_info.dean_designation"></textarea>
                     </div>
                 </div>
             </section>
-            
+
             <!-- Report Content -->
             <section id="report_content">
                 <div class="section-header">
                     <h2>Report Content</h2>
                 </div>
                 <div class="form-grid">
-                     <div class="form-group">
+                    <div class="form-group">
                         <label for="abstract_text">Abstract</label>
-                        <textarea id="abstract_text" name="report_content.abstract.text" style="min-height: 150px;"></textarea>
+                        <textarea id="abstract_text" name="report_content.abstract.text"
+                            style="min-height: 150px;"></textarea>
                     </div>
                     <div class="form-group">
                         <label for="ack_text">Acknowledgement Standard Text</label>
-                        <textarea id="ack_text" name="report_content.acknowledgement.standard_text" style="min-height: 150px;"></textarea>
+                        <textarea id="ack_text" name="report_content.acknowledgement.standard_text"
+                            style="min-height: 150px;"></textarea>
                     </div>
-                     <div class="form-group">
+                    <div class="form-group">
                         <label for="decl_text">Declaration Text</label>
-                        <textarea id="decl_text" name="report_content.declaration.text" style="min-height: 150px;"></textarea>
+                        <textarea id="decl_text" name="report_content.declaration.text"
+                            style="min-height: 150px;"></textarea>
                     </div>
                 </div>
             </section>
 
 
             <div class="sticky-footer">
-                <button type="submit" id="saveBtn">Save Configuration</button>
+                <button type="submit" id="saveBtn" class="action-btn">Save Configuration</button>
+                <button type="button" id="generateBtn" class="action-btn" style="margin-left: 10px;">Generate
+                    Report</button>
             </div>
         </form>
     </div>
@@ -317,49 +324,49 @@
                 setVal(`submission_info.${key}`, value);
             }
 
-             // Approvers (Nested manually in HTML so just populate)
-             if (data.people && data.people.approvers) {
+            // Approvers (Nested manually in HTML so just populate)
+            if (data.people && data.people.approvers) {
                 const app = data.people.approvers;
-                if(app.hod) {
+                if (app.hod) {
                     setVal('people.approvers.hod.name', app.hod.name);
                     setVal('people.approvers.hod.designation', app.hod.designation);
                     setVal('people.approvers.hod.department', app.hod.department);
                 }
-                if(app.dean) {
+                if (app.dean) {
                     setVal('people.approvers.dean.name', app.dean.name);
                     setVal('people.approvers.dean.designation', app.dean.designation);
                     setVal('people.approvers.dean.school', app.dean.school);
                 }
-                 if(app.principal) {
+                if (app.principal) {
                     setVal('people.approvers.principal.name', app.principal.name);
                     setVal('people.approvers.principal.designation', app.principal.designation);
                 }
-                 if(app.COE) {
+                if (app.COE) {
                     setVal('people.approvers.COE.name', app.COE.name);
                 }
-             }
+            }
 
-             // Certificate Info
+            // Certificate Info
             for (const [key, value] of Object.entries(data.certificate_info || {})) {
                 setVal(`certificate_info.${key}`, value);
             }
 
-             // Report Content
-             if (data.report_content) {
-                 if (data.report_content.abstract) setVal('report_content.abstract.text', data.report_content.abstract.text);
-                 if (data.report_content.acknowledgement) setVal('report_content.acknowledgement.standard_text', data.report_content.acknowledgement.standard_text);
-                 if (data.report_content.declaration) setVal('report_content.declaration.text', data.report_content.declaration.text);
-             }
+            // Report Content
+            if (data.report_content) {
+                if (data.report_content.abstract) setVal('report_content.abstract.text', data.report_content.abstract.text);
+                if (data.report_content.acknowledgement) setVal('report_content.acknowledgement.standard_text', data.report_content.acknowledgement.standard_text);
+                if (data.report_content.declaration) setVal('report_content.declaration.text', data.report_content.declaration.text);
+            }
 
-             // Arrays (Students & Guide) - Dynamic Generation
-             renderStudents(data.people?.students || []);
-             renderGuide(data.people?.guide || []);
+            // Arrays (Students & Guide) - Dynamic Generation
+            renderStudents(data.people?.students || []);
+            renderGuide(data.people?.guide || []);
         }
 
         function renderStudents(students) {
             const container = document.getElementById('students_container');
             container.innerHTML = '';
-            
+
             students.forEach((student, index) => {
                 const div = document.createElement('div');
                 div.className = 'array-item';
@@ -383,7 +390,7 @@
         function renderGuide(guides) {
             const container = document.getElementById('guide_container');
             container.innerHTML = '';
-            
+
             guides.forEach((guide, index) => {
                 const div = document.createElement('div');
                 div.className = 'array-item';
@@ -414,24 +421,55 @@
 
         // Live update for arrays since they are not standard form inputs
         window.updateStudent = (index, key, value) => {
-             if (!currentData.people.students[index]) return;
-             currentData.people.students[index][key] = value;
+            if (!currentData.people.students[index]) return;
+            currentData.people.students[index][key] = value;
         };
 
         window.updateGuide = (index, key, value) => {
-             if (!currentData.people.guide[index]) return;
-             currentData.people.guide[index][key] = value;
+            if (!currentData.people.guide[index]) return;
+            currentData.people.guide[index][key] = value;
         };
+
+        // Handle Generate Report
+        document.getElementById('generateBtn').addEventListener('click', async () => {
+            const btn = document.getElementById('generateBtn');
+            const originalText = btn.textContent;
+
+            try {
+                btn.disabled = true;
+                btn.textContent = 'Generating...';
+                showToast('Generating report... this may take a moment', 'info');
+
+                const response = await fetch('/api/generate-report', {
+                    method: 'POST'
+                });
+
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    showToast(result.message, 'success');
+                    console.log('Report Output:', result.output);
+                } else {
+                    showToast('Error: ' + result.message, 'error');
+                    console.error('Report Error:', result.output);
+                }
+            } catch (error) {
+                showToast('Network error: ' + error.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = originalText;
+            }
+        });
 
         // Handle Save
         document.getElementById('configForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const formData = new FormData(e.target);
-            
+
             // Reconstruct JSON from flat form data
             // We use the currentData as base to preserve any structure we missed (though we covered all)
             // and update it with form values.
-            
+
             const newData = JSON.parse(JSON.stringify(currentData)); // deep copy
 
             // Utility to set nested path
@@ -463,7 +501,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(newData)
                 });
-                
+
                 const result = await response.json();
                 if (result.status === 'success') {
                     showToast('Configuration saved successfully!', 'success');
@@ -475,15 +513,22 @@
             }
         });
 
+        let toastTimeout;
         function showToast(message, type) {
             const toast = document.getElementById('status-message');
             toast.textContent = message;
             toast.className = type + ' show-toast';
-            setTimeout(() => {
+
+            if (toastTimeout) {
+                clearTimeout(toastTimeout);
+            }
+
+            toastTimeout = setTimeout(() => {
                 toast.classList.remove('show-toast');
             }, 3000);
         }
 
     </script>
 </body>
+
 </html>
