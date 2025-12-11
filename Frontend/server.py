@@ -27,6 +27,24 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             except Exception as e:
                 self.wfile.write(json.dumps({'error': str(e)}).encode())
             return
+            
+        elif self.path == '/api/download-report':
+            # Serve the generated report file
+            OUTPUT_FILE = os.path.join(PROJECT_ROOT, 'output', 'full_report_v2.docx')
+            if os.path.exists(OUTPUT_FILE):
+                self.send_response(200)
+                self.send_header('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+                self.send_header('Content-Disposition', 'attachment; filename="project_report.docx"')
+                self.end_headers()
+                
+                with open(OUTPUT_FILE, 'rb') as f:
+                    self.wfile.write(f.read())
+            else:
+                self.send_response(404)
+                self.send_header('Content-type', 'application/json')
+                self.end_headers()
+                self.wfile.write(json.dumps({'error': 'Report not found. Please generate it first.'}).encode())
+            return
         
         # Serve static files
         # Check if the file exists in Frontend directory and rewrite path if so
@@ -37,7 +55,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             potential_path = os.path.join(FRONTEND_DIR, clean_path.lstrip('/'))
             if os.path.exists(potential_path):
                 self.path = '/Frontend' + clean_path
-
+                
         return http.server.SimpleHTTPRequestHandler.do_GET(self)
 
     def do_POST(self):

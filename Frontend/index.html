@@ -285,7 +285,34 @@
             <div class="sticky-footer">
                 <button type="submit" id="saveBtn" class="action-btn">Save Configuration</button>
                 <button type="button" id="generateBtn" class="action-btn">Generate Report</button>
+                <button type="button" id="downloadBtn" class="action-btn"
+                    style="display:none; background-color: #4CAF50;">
+                    📥 Download Report
+                </button>
             </div>
+
+            <!-- Loading Indicator -->
+            <div id="loadingOverlay"
+                style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.8); z-index:1000; justify-content:center; align-items:center; flex-direction:column;">
+                <div class="spinner"
+                    style="border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite;">
+                </div>
+                <p style="margin-top:20px; font-weight:bold; color:#333;">Generating Report... This may take up to 30
+                    seconds.</p>
+                <p style="color:#666; font-size:0.9em;">Please do not close this window.</p>
+            </div>
+
+            <style>
+                @keyframes spin {
+                    0% {
+                        transform: rotate(0deg);
+                    }
+
+                    100% {
+                        transform: rotate(360deg);
+                    }
+                }
+            </style>
         </form>
     </div>
 
@@ -436,11 +463,15 @@
         // Handle Generate Report
         document.getElementById('generateBtn').addEventListener('click', async () => {
             const btn = document.getElementById('generateBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const loadingOverlay = document.getElementById('loadingOverlay');
             const originalText = btn.textContent;
 
             try {
                 btn.disabled = true;
-                btn.textContent = 'Generating...';
+                downloadBtn.style.display = 'none'; // Hide download while generating new
+                loadingOverlay.style.display = 'flex'; // Show loading
+
                 showToast('Generating report... this may take a moment', 'info');
 
                 const response = await fetch('/api/generate-report', {
@@ -452,6 +483,9 @@
                 if (result.status === 'success') {
                     showToast(result.message, 'success');
                     console.log('Report Output:', result.output);
+
+                    // Show download button
+                    downloadBtn.style.display = 'inline-block';
                 } else {
                     showToast('Error: ' + result.message, 'error');
                     console.error('Report Error:', result.output);
@@ -460,8 +494,13 @@
                 showToast('Network error: ' + error.message, 'error');
             } finally {
                 btn.disabled = false;
-                btn.textContent = originalText;
+                loadingOverlay.style.display = 'none'; // Hide loading
             }
+        });
+
+        // Handle Download
+        document.getElementById('downloadBtn').addEventListener('click', () => {
+            window.location.href = '/api/download-report';
         });
 
         // Handle Save
