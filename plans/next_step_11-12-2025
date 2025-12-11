@@ -6,6 +6,33 @@ Transitioning from a local script to a scalable, monetized web service.
 
 ---
 
+## 🎨 Design Philosophy & UX (Crucial for Frontend/Akshay) ⚠️
+*Target Audience: Gen Z Students (19-21 years old).*
+
+**The Vibe:**
+*   **NOT:** Boring, corporate, overly "professional", static.
+*   **YES:** **"Dope"**, **Premium**, **Interactive**, **Fun**, **Fast**.
+
+**Specific Directives for Frontend (Akshay):**
+1.  **Premium Aesthetics:**
+    *   Do NOT just ask AI for "a card." Use high-end, pre-built component libraries (e.g., **Aceternity UI**, **Magic UI**, **Framer Motion**).
+    *   Use **Glassmorphism**, smooth **gradients**, and **micro-interaction animations** (hover effects, shiny borders).
+    *   **Goal:** When they land on the page, they should think "This app costs $100." When they see it's ₹19, it feels like a jackpot.
+
+2.  **Gamified Waiting Experience:**
+    *   **The "boring" way:** A spinning loader.
+    *   **The "Gen Z" way:**
+        *   Show "Juicy" loading texts: *"Bribing the external examiner..."*, *"Formatting margins so your HOD doesn't yell..."*, *"Stealing words from Wikipedia..."*
+        *   **Meme Integration:** Show random programming/college memes while generating using an API (e.g., Reddit meme API).
+        *   **Why?** Keeps their short attention span engaged.
+
+3.  **Modern UI Elements:**
+    *   **Dark Mode by Default** (or sleek high-contrast).
+    *   **Bento Grid Layouts** for features.
+    *   **Scroll Animations** (Parallax).
+
+---
+
 ## 📅 Roadmap Phases
 
 ### Phase 1: Modern Architecture (The "React" Shift)
@@ -13,8 +40,8 @@ Transitioning from a local script to a scalable, monetized web service.
 
 1.  **Frontend Transformation:**
     *   Convert current HTML/JS -> **React.js (Vite)**.
+    *   **Tech Stack:** React, Tailwind CSS, Framer Motion (for animations).
     *   Create reusable components (Forms, Progress Bars, Preview Cards).
-    *   State management for complex form data.
 2.  **Backend Refactoring:**
     *   Convert `http.server` -> **Flask** (Production ready).
     *   Create stateless API endpoints (`/api/auth`, `/api/generate`, `/api/status`).
