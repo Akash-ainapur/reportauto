@@ -22,7 +22,13 @@ class DeclarationGenerator(BaseSectionGenerator):
         replacements = [
             ("MVJ COLLEGE OF ENGINEERING", meta["college_name"], False, True, 18, None),
             ("DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING", meta["department_name"], False, True, 14, None),
-            ("Computer science and Engineering", meta["department_short"], False, True, 12, None),
+            
+             # Specific match for Body Text (Dept + College combo)
+            (r"Computer science and Engineering\s*,?\s*MVJ College of Engineering", meta.get("course_name", "Electronics and Communication Engineering"), True, False, None, None),
+
+             # General match for Dept Name
+            ("Computer science and Engineering", meta.get("course_name", "Electronics and Communication Engineering"), False, False, None, None),
+            
             (r"Sixth", meta["semester"], True, False, None, None),
             (r"Major", meta["project_type"], True, False, None, None),
             ("ARUNPRAKASH PATTAR", get_stud_name(0), False, False, None, None),
@@ -35,7 +41,7 @@ class DeclarationGenerator(BaseSectionGenerator):
             ("1MJ22CS029", get_stud_usn(3), False, False, None, None),
             ("2024-2025", meta["academic_year"], False, False, None, None),
             ("2024 - 2025", meta["academic_year"], False, False, None, None),
-             ("Computer science and Engineering", meta.get("department_short", "Dept of Universal Logic"), False, False, None, None),
+             ("Computer science and Engineering", meta.get("course_name", "Electronics and Communication Engineering"), False, False, None, None),
             (r"[\"“]?\s*MVJ\s*NEXTGEN\s*EDUCLOUD[:\s-]+AI[:\s-]+BASED\s*ACADEMIC\s*RESOURCE\s*MANAGER\s*[\"”]?", 
              [
                  {"text": "“", "bold": True, "color": None},

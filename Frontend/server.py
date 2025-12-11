@@ -32,9 +32,11 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         # Check if the file exists in Frontend directory and rewrite path if so
         # This allows accessing style.css directly as /style.css
         if not self.path.startswith(('/backend', '/Frontend', '/api')):
-            potential_path = os.path.join(FRONTEND_DIR, self.path.lstrip('/'))
+            # Strip query parameters for file lookup
+            clean_path = self.path.split('?')[0]
+            potential_path = os.path.join(FRONTEND_DIR, clean_path.lstrip('/'))
             if os.path.exists(potential_path):
-                self.path = '/Frontend' + self.path
+                self.path = '/Frontend' + clean_path
 
         return http.server.SimpleHTTPRequestHandler.do_GET(self)
 

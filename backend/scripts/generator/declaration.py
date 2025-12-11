@@ -172,10 +172,14 @@ def update_declaration_page(input_path):
     # Format: (Search, Replace, Regex?, Bold?, Size?, Color?)
     replacements = [
         # College and Dept
-        ("MVJ COLLEGE OF ENGINEERING", meta["college_name"], False, True, 18, None),
         ("DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING", meta["department_name"], False, True, 14, None),
+        
+        # Specific match for Body Text (Dept + College combo)
+        (r"Computer science and Engineering\s*,?\s*MVJ College of Engineering", meta.get("course_name", "Electronics and Communication Engineering"), True, False, None, None),
 
-        ("Computer science and Engineering", meta["department_short"], False, True, 12, None),
+        # General match for Dept Name
+        ("Computer science and Engineering", meta.get("course_name", "Electronics and Communication Engineering "), False, False, None, None),
+        
         
         # Semester
         (r"Sixth", meta["semester"], True, False, None, None),
@@ -200,7 +204,7 @@ def update_declaration_page(input_path):
         ("2024 - 2025", meta["academic_year"], False, False, None, None), # Handle both formats
         
         # Dept Name in Body (using department_short as requested)
-        ("Computer science and Engineering", meta.get("department_short", "Dept of Universal Logic"), False, False, None, None),
+        ("Computer science and Engineering", meta.get("course_name", "Electronics and Communication Engineering "), False, False, None, None),
 
         # Project Title (Red, Robust Regex)
         # Replaced with Multi-Segment List for: Black Quotes + Red Title

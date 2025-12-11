@@ -333,7 +333,7 @@ def update_certificate_page(input_path):
         ("DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING", meta["department_name"].upper(), False, True, 14, None),
         
         # Body Dept Name: Replace "Computer science and Engineering" with anonymous name
-        ("Computer science and Engineering", meta.get("department_short", "Dept of Universal Logic"), False, False, None, None),
+        ("Computer science and Engineering", meta.get("course_name", "Electronics and Communication Engineering "), False, False, None, None),
         
         # Major -> Mini replacement
         (r"Major",meta["project_type"], True, False, None, None),

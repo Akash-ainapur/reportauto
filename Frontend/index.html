@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Report Configuration Editor</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2">
 </head>
 
 <body>
@@ -73,6 +73,10 @@
                     <div class="form-group">
                         <label for="project_type_meta">Project Type</label>
                         <input type="text" id="project_type_meta" name="global_metadata.project_type">
+                    </div>
+                    <div class="form-group">
+                        <label for="course_name">Course Name</label>
+                        <input type="text" id="course_name" name="global_metadata.course_name">
                     </div>
                 </div>
             </section>
@@ -280,8 +284,7 @@
 
             <div class="sticky-footer">
                 <button type="submit" id="saveBtn" class="action-btn">Save Configuration</button>
-                <button type="button" id="generateBtn" class="action-btn" style="margin-left: 10px;">Generate
-                    Report</button>
+                <button type="button" id="generateBtn" class="action-btn">Generate Report</button>
             </div>
         </form>
     </div>
