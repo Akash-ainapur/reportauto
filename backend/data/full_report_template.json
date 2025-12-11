@@ -1,14 +1,14 @@
 {
     "__comment": "Master Data Source for Automated Report Generation",
     "global_metadata": {
-        "project_title": "Makabulla kelsa illa",
-        "project_subtitle": "idk what the f is yhis project",
-        "domain": "dancer",
+        "project_title": "pilots dteecting and shooting them",
+        "project_subtitle": "gandhiji is abd or good person",
+        "domain": "politics",
         "academic_year": "2026-89",
         "semester": "Fifth",
         "college_name": "GALACTIC INSTITUTE OF TECHNOLOGY",
-        "department_name": "DEPARTMENT OF QUANTUM COMPUTING",
-        "department_abbr": "DQC",
+        "department_name": "DEPARTMENT OF ECE",
+        "department_abbr": "ECE",
         "department_short": "Department of Universal logic",
         "city_code": "MARS COLONY - 001",
         "pincode": "999999",
@@ -27,21 +27,21 @@
     "submission_info": {
         "date": "[DATE]",
         "place": "BANGALORE",
-        "academic_year_range": "2024-2025"
+        "academic_year_range": "2028-30"
     },
     "people": {
         "students": [
             {
                 "usn": "ID-999-001",
-                "name": "Akshay"
+                "name": "Akshay Hard coder"
             },
             {
                 "usn": "ID-999-002",
-                "name": "aka thugesh"
+                "name": "aka thugesh baddi boss"
             },
             {
                 "usn": "ID-999-003",
-                "name": "Debaditya Das"
+                "name": "Debaditya Das kaddi boss"
             },
             {
                 "usn": "ID-999-004",
@@ -77,7 +77,7 @@
         }
     },
     "certificate_info": {
-        "project_type": "bada project",
+        "project_type": "kelsa illadha",
         "certificate_title": "CERTIFICATE",
         "guide_name": "Prof. Albus Dumbledore",
         "hod_name": "Dr. Dummy HOD",
@@ -98,5 +98,57 @@
         },
         "chapters": [],
         "references": []
+    },
+    "ai_content_config": {
+        "enabled": true,
+        "model": "gemini-1.5-flash-8b",
+        "temperature": 0.7,
+        "sections": {
+            "abstract": {
+                "generate": true,
+                "word_limit": 250,
+                "custom_prompt": null
+            },
+            "introduction": {
+                "generate": true,
+                "word_limit": 800,
+                "custom_prompt": null
+            },
+            "literature_survey": {
+                "generate": true,
+                "word_limit": 2000,
+                "custom_prompt": null
+            },
+            "problem_statement": {
+                "generate": true,
+                "word_limit": 500,
+                "custom_prompt": null
+            },
+            "existing_proposed": {
+                "generate": true,
+                "word_limit": 800,
+                "custom_prompt": null
+            },
+            "methodology": {
+                "generate": true,
+                "word_limit": 1000,
+                "custom_prompt": null
+            },
+            "requirements": {
+                "generate": true,
+                "word_limit": 400,
+                "custom_prompt": null
+            },
+            "conclusion": {
+                "generate": true,
+                "word_limit": 400,
+                "custom_prompt": null
+            },
+            "references": {
+                "generate": true,
+                "word_limit": 600,
+                "custom_prompt": null
+            }
+        }
     }
 }

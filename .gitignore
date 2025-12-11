@@ -1,1 +1,17 @@
 output/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Compiled Python files
+*.pyc
+*.pyo
+*.pyd
+
+# Environment variables (API keys)
+.env
+
+# AI response cache (for local testing)
+ai_cache.json
