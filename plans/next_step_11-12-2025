@@ -1,0 +1,77 @@
+# 🗺️ Project Master Plan: Automated Report Generator
+
+## 🎯 Executive Summary
+Transitioning from a local script to a scalable, monetized web service.
+**Goal:** A paid SaaS platform where students generate professional reports instanty.
+
+---
+
+## 📅 Roadmap Phases
+
+### Phase 1: Modern Architecture (The "React" Shift)
+*Objective: Decouple Frontend and Backend for scalability.*
+
+1.  **Frontend Transformation:**
+    *   Convert current HTML/JS -> **React.js (Vite)**.
+    *   Create reusable components (Forms, Progress Bars, Preview Cards).
+    *   State management for complex form data.
+2.  **Backend Refactoring:**
+    *   Convert `http.server` -> **Flask** (Production ready).
+    *   Create stateless API endpoints (`/api/auth`, `/api/generate`, `/api/status`).
+    *   Optimize file handling for cloud (don't store locally, stream to user).
+
+### Phase 2: Beta Launch (Free w/ Limits)
+*Objective: User testing and feedback collection.*
+
+1.  **Authentication:**
+    *   Implement Login/Signup (Firebase Auth or Supabase recommended for ease).
+    *   Secure endpoints (JWT Tokens).
+2.  **Rate Limiting System:**
+    *   **Backend Logic:** Track `generations_count` per user in database.
+    *   **Rule:** 1 free generation per day (or similar limit).
+    *   **UX:** Show "Daily limit reached" message if exceeded.
+3.  **Deployment (Beta):**
+    *   Deploy Frontend to **Vercel** (Global CDN).
+    *   Deploy Backend to **Render** (Python Service).
+
+### Phase 3: Monetization (Production)
+*Objective: Revenue generation.*
+
+1.  **Payment Integration:**
+    *   Integrate **Razorpay** SDK.
+    *   **Workflow:** Generate Button -> Pay ₹19 -> Success Webhook -> Start Generation.
+2.  **Scalability:**
+    *   Increase server resources.
+    *   Implement queue system (Redis) if simultaneous users > 50.
+
+---
+
+## ☁️ Hosting Strategy (Analysis)
+
+Based on 2024 pricing and architecture needs:
+
+### 🏆 Recommended Stack: "The Hybrid"
+**Frontend:** Vercel | **Backend:** Render
+
+| Component | Platform | Plan | Why? |
+|-----------|----------|------|------|
+| **Frontend** | **Vercel** | **Free Hobby** | Best for React. Fast global delivery. Unlimited bandwidth for static sites. |
+| **Backend** | **Render** | **Free Tier** | 750 free hours/month. Perfect for Python. Spins down when unused (saves money). |
+| **Database** | **Supabase** | **Free Tier** | Excellent Postgres DB for user data & limits. 500MB free. |
+
+### 🥈 Alternative: "All-in-One" (Railway)
+*   **Pros:** Frontend & Backend in one dashboard. Extremely easy setup.
+*   **Cons:** $5 trial credit runs out. Minimum $5/mo after trial.
+*   **Verdict:** Use if you want simplicity and don't mind paying $5/mo soon.
+
+### 🥉 Alternative: "The AWS Route" (AWS Free Tier)
+*   **Pros:** Industry standard. 12 months free EC2.
+*   **Cons:** Very complex setup. Risk of unexpected bills.
+*   **Verdict:** Avoid for now. Overkill for Beta.
+
+---
+
+## 🛠️ Next Technical Steps
+1.  Initialize **React Project** (Vite).
+2.  Set up **Flash Backend** structure.
+3.  Connect the two locally.
