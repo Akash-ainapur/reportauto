@@ -2,8 +2,14 @@ import time
 import requests
 import sys
 
-BASE_URL = 'http://127.0.0.1:5000'
+import time
+import requests
+import sys
 
+# Default to localhost, but allow CLI override
+BASE_URL = sys.argv[1] if len(sys.argv) > 1 else 'http://127.0.0.1:5000'
+# Removing trailing slash if present
+BASE_URL = BASE_URL.rstrip('/')
 def test_health():
     print(f"Testing Health Check at {BASE_URL}/health...")
     try:
