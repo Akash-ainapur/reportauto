@@ -13,7 +13,8 @@
         "city_code": "MARS COLONY - 001",
         "pincode": "999999",
         "college_address": "Near ITPB, Whitefield, Bangalore \u00e2\u20ac\u201c 560067",
-        "project_type": "Mini"
+        "project_type": "Mini",
+        "course_name": "Electronics and Communication Engineering "
     },
     "styles": {
         "project_title": 16,

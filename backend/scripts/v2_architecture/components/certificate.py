@@ -21,7 +21,7 @@ class CertificateGenerator(BaseSectionGenerator):
         styled_replacements = [
             ("MVJ COLLEGE OF ENGINEERING", meta["college_name"], False, True, 18, None),
             ("DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING", meta["department_name"].upper(), False, True, 14, None),
-            ("Computer science and Engineering", meta.get("department_short", "Dept of Universal Logic"), False, False, None, None),
+            ("Computer science and Engineering", meta.get("course_name", "Electronics and Communication Engineering"), False, False, None, None),
             (r"Major", meta["project_type"], True, False, None, None),
             ("2024 - 2025", meta["academic_year"], False, False, None, None),
             ("Near ITPB, Whitefield, Bangalore – 560067", meta["college_address"], False, False, None, None),
