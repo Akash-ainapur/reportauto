@@ -35,18 +35,36 @@ class PromptTemplates:
             "template": (
                 "Write an abstract for a {project_type} project titled '{project_title}' "
                 "in the domain of {domain}.\n\n"
+                "INFER the core problem and a modern 3-node tech stack suitable for this title.\n\n"
                 "The abstract should:\n"
                 "- Provide a concise overview of the project\n"
-                "- Mention the problem being addressed\n"
+                "- Mention the problem being addressed (Infer based on title)\n"
                 "- Briefly describe the proposed solution or approach\n"
                 "- Highlight the key benefits or expected outcomes\n"
                 "- Be approximately {word_limit} words\n\n"
                 "Write only the abstract content, do not include the heading 'ABSTRACT' or any other titles."
             ),
+            "template_director": (
+                "Write an abstract for a {project_type} project titled '{project_title}'.\n\n"
+                "CONTEXT:\n"
+                "The core problem is: {problem_desc}\n"
+                "Our proposed solution uses: {tech_stack}\n"
+                "To achieve: {solution_desc}\n"
+                "Key features: {key_features}\n\n"
+                "The abstract should:\n"
+                "- Seamlessly weave these specific details into a professional narrative\n"
+                "- Highlight the key benefits or expected outcomes\n"
+                "- Be approximately {word_limit} words\n\n"
+                "Write only the abstract content."
+            ),
             "word_limit": 250,
             "default_context": {
                 "project_type": "engineering",
-                "domain": "technology"
+                "domain": "technology",
+                "problem_desc": "manual and inefficient systems",
+                "tech_stack": "modern technologies",
+                "solution_desc": "automate the process",
+                "key_features": "efficiency and accuracy"
             }
         },
         
@@ -61,53 +79,59 @@ class PromptTemplates:
                 "Write a comprehensive introduction for the following project:\n\n"
                 "Project Title: {project_title}\n"
                 "Domain: {domain}\n\n"
+                "INFER the Motivation and Objectives suitable for this specific title.\n\n"
                 "Create an introduction with the following NUMBERED subsections:\n\n"
                 "### 1.1 Background\n"
-                "Provide context about the problem domain and current state of technology.\n\n"
+                "Provide context about the problem domain and standard technologies used.\n\n"
                 "### 1.2 Motivation\n"
-                "Explain why this project is important and what gap it addresses.\n\n"
+                "Explain why this project is important and what gap it addresses (Infer from title).\n\n"
                 "### 1.3 Objectives\n"
-                "List the main goals and objectives of the project.\n\n"
+                "List 4-5 specific goals and objectives of the project.\n\n"
                 "IMPORTANT FORMATTING RULES:\n"
-                "- Use '### 1.1 Title' format for subsections (will appear in Table of Contents)\n"
-                "- Use **bold** for key terms and emphasis\n"
-                "- Use *italic* for technical terms when first introduced\n"
+                "- Use '### 1.1 Title' format for subsections\n"
+                "- Use **bold** for key terms\n"
                 "- Write clear, concise paragraphs\n"
                 "- Target length: approximately {word_limit} words total\n\n"
-                "Write only the introduction content with numbered subsections. "
-                "Do not include 'CHAPTER 1' or 'INTRODUCTION' headings as those are added automatically."
+                "Write only the introduction content with numbered subsections."
+            ),
+            "template_director": (
+                "Write a comprehensive introduction for:\n"
+                "Project Title: {project_title}\n\n"
+                "Use this SPECIFIC context:\n"
+                "Problem: {problem_desc}\n"
+                "Proposed Solution: {solution_desc}\n"
+                "Key Objectives: {key_features}\n\n"
+                "Create numbered subsections:\n"
+                "### 1.1 Background\n"
+                "Contextualize the specific problem: {problem_desc}\n\n"
+                "### 1.2 Motivation\n"
+                "Why is {solution_desc} necessary?\n\n"
+                "### 1.3 Objectives\n"
+                "List specific objectives including: {key_features}\n\n"
+                "Target length: {word_limit} words."
             ),
             "word_limit": 200,
             "default_context": {
                 "project_type": "engineering",
-                "domain": "technology"
+                "domain": "technology",
+                "problem_desc": "inefficiency in current methods",
+                "solution_desc": "automation",
+                "key_features": "better performance"
             }
         },
         
         "literature_survey": {
             "system": (
                 "You are an academic researcher compiling a literature survey for an engineering project report. "
-                "Write professional research paper summaries in formal academic tone. "
+                "Write professional research paper summaries. "
                 "Each entry should have: authors, publication year, and a detailed summary. "
-                "Use numbered subsections (2.1, 2.2, etc.) for each paper reviewed."
+                "Use numbered subsections (2.1, 2.2, etc.)."
             ),
             "template": (
-                "Write a comprehensive literature survey for the following project:\n\n"
-                "Project Title: {project_title}\n"
-                "Domain: {domain}\n\n"
-                "Generate 10-12 literature survey entries in the following format:\n\n"
-                "### 2.1 [Paper Title]\n"
-                "**AUTHORS:** [Author Names]\n"
-                "**PUBLISHED ON:** [Year]\n"
-                "[Detailed summary of the paper, its contributions, methodology, and findings]\n\n"
-                "IMPORTANT:\n"
-                "- Use numbered subsections: ### 2.1, ### 2.2, ### 2.3, etc.\n"
-                "- Each entry should be 150-200 words\n"
-                "- Cover diverse aspects: cloud computing, AI/ML, security, databases, web technologies\n"
-                "- Include recent papers (2019-2025)\n"
-                "- Use **bold** for AUTHORS and PUBLISHED ON\n"
-                "- Total length: approximately {word_limit} words\n\n"
-                "Do not include 'CHAPTER 2' or 'LITERATURE SURVEY' headings."
+                "Write a literature survey for: '{project_title}' ({domain}).\n"
+                "Generate 10-12 generic but relevant papers for this domain from 2019-2025.\n"
+                "Format: ### 2.1 [Title]\n**AUTHORS:** ...\n**PUBLISHED ON:** ...\n[Summary]\n"
+                "Total length: {word_limit} words."
             ),
             "word_limit": 500,
             "default_context": {
@@ -118,103 +142,97 @@ class PromptTemplates:
         
         "problem_statement": {
             "system": (
-                "You are a technical analyst identifying problems in existing systems. "
-                "Write in formal academic tone, clearly articulating gaps, challenges, and limitations. "
-                "Focus on why current solutions are insufficient and what needs improvement."
+                "You are a technical analyst identifying problems. "
+                "Write in formal academic tone."
             ),
             "template": (
-                "Write a detailed problem statement for the following project:\n\n"
-                "Project Title: {project_title}\n"
-                "Domain: {domain}\n\n"
-                "The problem statement should cover:\n"
-                "1. Current state of existing systems and their limitations\n"
-                "2. Specific challenges faced by users (students/institutions)\n"
-                "3. Technical gaps (scalability, security, accessibility, intelligence)\n"
-                "4. User experience issues (manual processes, lack of personalization)\n"
-                "5. Why these problems need to be addressed\n\n"
-                "Write in clear, flowing paragraphs. Be specific about problems.\n"
-                "Use **bold** for key issues.\n"
-                "Target length: approximately {word_limit} words.\n\n"
-                "Do not include 'CHAPTER 3' or 'PROBLEM STATEMENT' headings."
+                "Write a problem statement for: '{project_title}' ({domain}).\n"
+                "INFER common problems faced in this domain.\n"
+                "Cover: Limitations of existing systems, technical gaps, and user pain points.\n"
+                "Target length: {word_limit} words."
+            ),
+            "template_director": (
+                "Write a specific problem statement for: '{project_title}'.\n\n"
+                "ELABORATE on this specific problem description:\n"
+                "'{problem_desc}'\n\n"
+                "Discuss technical gaps related to not having '{solution_desc}'.\n"
+                "Target length: {word_limit} words."
             ),
             "word_limit": 250,
             "default_context": {
                 "project_type": "engineering",
-                "domain": "technology"
+                "domain": "technology",
+                "problem_desc": "manual systems",
+                "solution_desc": "automated systems"
             }
         },
         
         "existing_proposed": {
             "system": (
-                "You are a systems architect comparing existing and proposed solutions. "
-                "Write detailed technical comparisons with numbered subsections. "
-                "Clearly articulate advantages and disadvantages in formal academic style."
+                "You are a systems architect comparing solutions. "
+                "Write detailed technical comparisons."
             ),
             "template": (
-                "Write a comprehensive comparison of existing and proposed systems:\n\n"
-                "Project Title: {project_title}\n"
-                "Domain: {domain}\n\n"
-                "Structure the content with these numbered subsections:\n\n"
+                "Compare Existing and Proposed Systems for: '{project_title}'.\n"
+                "INFER a standard existing system and propose a modern solution.\n"
+                "Subsections:\n### 4.1 Existing System\n### 4.1.1 Disadvantages\n### 4.2 Proposed System\n### 4.2.1 Advantages\n"
+                "Target length: {word_limit} words."
+            ),
+            "template_director": (
+                "Compare Existing and Proposed Systems for: '{project_title}'.\n\n"
                 "### 4.1 Existing System\n"
-                "Describe current approaches, their features, and how they work. "
-                "Mention technologies used (cloud storage, LMS, basic platforms).\n\n"
-                "### 4.1.1 Disadvantages of Existing System\n"
-                "List 5-6 specific disadvantages as:\n"
-                "i. [Disadvantage 1]\n"
-                "ii. [Disadvantage 2]\n"
-                "etc.\n\n"
+                "Discuss systems that suffer from: {problem_desc}\n\n"
                 "### 4.2 Proposed System\n"
-                "Describe your innovative solution, key features, and how it addresses the gaps. "
-                "Mention advanced technologies (AI, cloud, real-time processing, etc.).\n\n"
-                "### 4.2.1 Advantages of Proposed System\n"
-                "List 5-6 specific advantages as:\n"
-                "i. [Advantage 1]\n"
-                "ii. [Advantage 2]\n"
-                "etc.\n\n"
-                "IMPORTANT:\n"
-                "- Use numbered subsections (### 4.1, ### 4.1.1, ### 4.2, ### 4.2.1)\n"
-                "- Use **bold** for key technologies and features\n"
-                "- Target length: approximately {word_limit} words\n\n"
-                "Do not include 'CHAPTER 4' heading."
+                "Describe the proposed solution: {solution_desc}\n"
+                "Using technology: {tech_stack}\n\n"
+                "Highlight these advantages: {key_features}\n"
+                "Target length: {word_limit} words."
             ),
             "word_limit": 400,
             "default_context": {
                 "project_type": "engineering",
-                "domain": "technology"
+                "domain": "technology",
+                "problem_desc": "manual errors",
+                "solution_desc": "automation",
+                "tech_stack": "Modern AI/ML",
+                "key_features": "accuracy and speed"
             }
         },
         
         "methodology": {
             "system": (
                 "You are a technical architect documenting system methodology. "
-                "Write detailed technical descriptions of system design, components, and implementation approach. "
-                "Use formal engineering language with numbered subsections for clarity."
+                "Write detailed technical descriptions. "
+                "Use formal engineering language."
             ),
             "template": (
-                "Write a comprehensive methodology for implementing:\n\n"
-                "Project Title: {project_title}\n"
-                "Domain: {domain}\n\n"
-                "Start with an overview paragraph explaining the overall approach.\n\n"
-                "Then create numbered subsections covering:\n\n"
-                "### 5.1 System Design and Components\n"
-                "Describe the architecture (cloud platform, web interface, database, AI components).\n\n"
-                "### 5.2 Data Processing and AI Integration\n"
-                "Explain how data is processed, AI algorithms used, and content management.\n\n"
-                "### 5.3 Communication and APIs\n"
-                "Describe data transmission protocols (RESTful APIs, real-time communication).\n\n"
-                "### 5.4 User Interface and Interaction\n"
-                "Explain the web interface, features, and user control mechanisms.\n\n"
-                "IMPORTANT:\n"
-                "- Use roman numerals (i., ii., iii.) for sub-points\n"
-                "- Use **bold** for technical terms\n"
-                "- Mention specific technologies (AWS, React, MongoDB, etc.)\n"
-                "- Target length: approximately {word_limit} words\n\n"
-                "Do not include 'CHAPTER 5' or 'METHODOLOGY' headings."
+                "Write a methodology for: '{project_title}'.\n"
+                "INFER a suitable 3-tier architecture using standard modern tools.\n"
+                "Subsections:\n"
+                "### 5.1 System Design\n"
+                "### 5.2 Data Processing\n"
+                "### 5.3 Communication\n"
+                "### 5.4 User Interface\n"
+                "Target length: {word_limit} words."
+            ),
+            "template_director": (
+                "Write a System Methodology for: '{project_title}'.\n\n"
+                "Base the architecture strictly on this TECH STACK: {tech_stack}\n"
+                "To implement this SOLUTION: {solution_desc}\n\n"
+                "Subsections:\n"
+                "### 5.1 System Design\n"
+                "Describe how {tech_stack} components interact.\n\n"
+                "### 5.2 Implementation Modules\n"
+                "Explain the implementation of {key_features}.\n\n"
+                "Target length: {word_limit} words."
             ),
             "word_limit": 500,
             "default_context": {
                 "project_type": "engineering",
-                "domain": "technology"
+                "domain": "technology",
+                "tech_stack": "Cloud, AI, DB",
+                "solution_desc": "integrated system",
+                "key_features": "core modules"
             }
         },
         
@@ -346,10 +364,26 @@ class PromptTemplates:
         if "word_limit" not in full_context:
             full_context["word_limit"] = template_config["word_limit"]
         
+        # Determine Mode: Autopilot vs Director
+        # Logic: If 'tech_stack' is present and not generic, use Director Mode
+        is_director_mode = (
+            "tech_stack" in full_context and 
+            full_context["tech_stack"] != template_config["default_context"].get("tech_stack", "") and
+            "template_director" in template_config
+        )
+        
+        selected_template = template_config["template_director"] if is_director_mode else template_config["template"]
+        
         # Format the prompt template
         try:
-            formatted_prompt = template_config["template"].format(**full_context)
+            formatted_prompt = selected_template.format(**full_context)
             system_instruction = template_config["system"]
+            
+            if is_director_mode:
+                print(f"🎬 Director Mode Prompt: {section_name}")
+            else:
+                print(f"✈️ Autopilot Prompt: {section_name}")
+                
             return system_instruction, formatted_prompt
         except KeyError as e:
             raise ValueError(f"Missing required context variable: {e}")

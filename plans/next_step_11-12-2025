@@ -98,7 +98,41 @@ Based on 2024 pricing and architecture needs:
 
 ---
 
-## 🛠️ Next Technical Steps
-1.  Initialize **React Project** (Vite).
-2.  Set up **Flash Backend** structure.
-3.  Connect the two locally.
+## 🛠️ Phase 2: Implementation Guide (Updated)
+
+### A. Backend API Reference (Ready for Integration) 🔌
+Your backend is live at: `https://reportgen-dz31.onrender.com`
+
+| Method | Endpoint | Description | Payload (JSON) |
+| :--- | :--- | :--- | :--- |
+| **GET** | `/health` | Verify server status | `None` |
+| **POST** | `/api/generate` | Start Report Generation | `{"project_title": "...", "tech_stack": "...", ...}` |
+| **GET** | `/api/status` | Poll for Progress | `None` (Returns `{"progress": 14, "current_step": "..."}`) |
+| **GET** | `/api/download` | Download Final DOCX | `None` (Streamed file) |
+
+### B. Frontend Tasks (For Akshay) ⚛️
+**1. Initialize Project:**
+*   Stack: `Vite` + `React` + `Tailwind CSS`.
+*   Install `axios` for API calls and `framer-motion` for animations.
+
+**2. Build the "Smart Form" (3 Tiers):**
+*   **Tier 1 (Mandatory):** Title, Team Members, Guide, College. (Show on Load).
+*   **Tier 2 (Advanced/Hidden):** Certificate details, Date/Place. (Hide behind "Advanced" toggle).
+*   **Tier 3 (AI Mode Toggle):**
+    *   🔘 **Autopilot:** User enters Title -> We send ONLY Title.
+    *   🔘 **Director Mode:** User enters `Problem`, `Solution`, `Tech Stack` -> We send ALL fields.
+
+**3. The Generation Flow (The "Juicy" Part):**
+1.  **User Clicks Generate:**
+    *   Show Full-Screen Overlay.
+    *   Start **Polling** `/api/status` every 2 seconds.
+2.  **While Waiting:**
+    *   Display random "Gen Z" loading messages (e.g., *"Convincing GPT to do your homework..."*).
+    *   Show a progress bar (0-100% based on `progress/14`).
+3.  **On Success:**
+    *   Show "Report Ready!" with Confetti.
+    *   Present **"Download DOCX"** button (links to `/api/download`).
+
+**4. Error Handling:**
+*   If `/api/generate` returns `409` (Busy) -> Show "Server busy, please wait 30s."
+*   If Poll returns `error` -> Show nice error toast.
