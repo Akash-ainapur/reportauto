@@ -6,6 +6,7 @@ to generate AI-powered content for report sections.
 """
 
 import os
+import time
 import json
 import hashlib
 from pathlib import Path
@@ -152,11 +153,19 @@ class GeminiService:
                     self._save_cache()
                     print("💾 Cached AI response for future use")
                 
+                # Rate Limiting: Sleep to prevent hitting RPM limits
+                print("⏳ Rate Limiting: Waiting 5s...")
+                time.sleep(5)
+                
                 return content
                 
             except Exception as e:
                 print(f"⚠️  Attempt {attempt + 1}/{max_retries} failed: {str(e)}")
-                if attempt == max_retries - 1:
+                if attempt < max_retries - 1:
+                    wait_time = 2 ** attempt
+                    print(f"   Waiting {wait_time}s before retry...")
+                    time.sleep(wait_time)
+                else:
                     print("   Using fallback content.")
                     return self._get_fallback_content(prompt)
         
