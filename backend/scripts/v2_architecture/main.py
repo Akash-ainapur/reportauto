@@ -21,12 +21,22 @@ from components.requirements import RequirementsGenerator
 from components.conclusion import ConclusionGenerator
 from components.references import ReferencesGenerator
 
+import argparse
+
 def main():
+    # Parse arguments
+    parser = argparse.ArgumentParser(description='Generate Project Report')
+    parser.add_argument('--data', help='Path to input JSON data file')
+    parser.add_argument('--output', help='Path to output DOCX file')
+    args = parser.parse_args()
+
     print("🚀 Starting V2 Report Assembly (Single Object Workflow)...")
     
     # 1. Initialize Context
     project_root = os.path.dirname(os.path.dirname(os.path.dirname(current_dir)))
-    context = ReportContext(project_root)
+    
+    # Use provided data path if available
+    context = ReportContext(project_root, data_file=args.data)
     
     # 2. Initialize Builder
     builder = ReportBuilder(context)
@@ -48,7 +58,14 @@ def main():
     builder.add_step(ReferencesGenerator)             # Section 13 - References
     
     # 4. Build & Save
-    builder.build().save("full_report_v2.docx")
+    # 4. Build & Save
+    output_filename = args.output if args.output else "full_report_v2.docx"
+    # If absolute path is provided in args.output, builder.save handles it if it's just a filename, but we want to be safe.
+    # Actually builder.save joins with output_dir. Let's make builder.save smarter or handle it here.
+    # Looking at builder.py: os.path.join(self.context.output_dir, filename)
+    # If filename is absolute, join ignores the first part. Perfect.
+    
+    builder.build().save(output_filename)
     
     print("✨ Process Completed.")
 
