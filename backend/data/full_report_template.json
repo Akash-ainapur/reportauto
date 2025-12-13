@@ -1,90 +1,129 @@
 {
     "__comment": "Master Data Source for Automated Report Generation",
+    "ai_content_config": {
+        "enabled": true,
+        "model": "gemini-1.5-flash-8b",
+        "sections": {
+            "abstract": {
+                "custom_prompt": null,
+                "generate": true,
+                "word_limit": 250
+            },
+            "conclusion": {
+                "custom_prompt": null,
+                "generate": true,
+                "word_limit": 400
+            },
+            "existing_proposed": {
+                "custom_prompt": null,
+                "generate": true,
+                "word_limit": 800
+            },
+            "introduction": {
+                "custom_prompt": null,
+                "generate": true,
+                "word_limit": 800
+            },
+            "literature_survey": {
+                "custom_prompt": null,
+                "generate": true,
+                "word_limit": 2000
+            },
+            "methodology": {
+                "custom_prompt": null,
+                "generate": true,
+                "word_limit": 1000
+            },
+            "problem_statement": {
+                "custom_prompt": null,
+                "generate": true,
+                "word_limit": 500
+            },
+            "references": {
+                "custom_prompt": null,
+                "generate": true,
+                "word_limit": 600
+            },
+            "requirements": {
+                "custom_prompt": null,
+                "generate": true,
+                "word_limit": 400
+            }
+        },
+        "temperature": 0.7
+    },
+    "certificate_info": {
+        "certificate_title": "CERTIFICATE",
+        "dean_designation": "Dean, School of CSE\nMVJCE",
+        "dean_name": "Dr. Dummy Dean",
+        "guide_designation": "Assistant Professor\nDepartment of Universal Logic",
+        "guide_name": "Prof. Albus Dumbledore",
+        "hod_designation": "Assistant Professor\nDepartment of Universal Logic",
+        "hod_name": "Dr. Dummy HOD",
+        "project_type": "kelsa illadha"
+    },
     "global_metadata": {
-        "project_title": "pilots dteecting and shooting them",
-        "project_subtitle": "gandhiji is abd or good person",
-        "domain": "politics",
         "academic_year": "2026-89",
-        "semester": "Fifth",
-        "college_name": "GALACTIC INSTITUTE OF TECHNOLOGY",
-        "department_name": "DEPARTMENT OF ECE",
-        "department_abbr": "ECE",
-        "department_short": "Department of Universal logic",
         "city_code": "MARS COLONY - 001",
-        "pincode": "999999",
         "college_address": "Near ITPB, Whitefield, Bangalore \u00e2\u20ac\u201c 560067",
-        "project_type": "Mini",
-        "course_name": "Electronics and Communication Engineering "
-    },
-    "styles": {
-        "project_title": 16,
-        "project_subtitle": 14,
-        "student_details": 14,
-        "guide_name": 14,
-        "guide_label": 14,
-        "header_footer": 10
-    },
-    "submission_info": {
-        "date": "[DATE]",
-        "place": "BANGALORE",
-        "academic_year_range": "2028-30"
+        "college_name": "MVJ COLLEGE OF ENGINEERING",
+        "course_name": "Electronics and Communication Engineering ",
+        "department_abbr": "ALIBABA",
+        "department_name": "DEPARTMENT OF KAKKA",
+        "department_short": "Department of Universal logic",
+        "domain": "biology",
+        "pincode": "999999",
+        "project_subtitle": "",
+        "project_title": "An Experimental Study on Automated Political Sentiment Interpretation Using Logical Signal Models",
+        "project_type": "Major",
+        "semester": "Fifth"
     },
     "people": {
         "students": [
             {
-                "usn": "ID-999-001",
-                "name": "Akshay Hard coder"
+                "name": "Akshay Hard nope",
+                "usn": "ID-999-001"
             },
             {
-                "usn": "ID-999-002",
-                "name": "aka thugesh baddi boss"
+                "name": "aka thugesh baddi boss",
+                "usn": "ID-999-002"
             },
             {
-                "usn": "ID-999-003",
-                "name": "Debaditya Das kaddi boss"
+                "name": "Debaditya Das kaddi boss",
+                "usn": "ID-999-003"
             },
             {
-                "usn": "ID-999-004",
-                "name": "basuuu"
+                "name": "basuuu basappa lingappa",
+                "usn": "ID-999-004"
             }
         ],
         "guide": [
             {
-                "name": "PROF. DUMBLEDORE",
-                "designation": "HEAD WIZARD",
                 "department": "department of outer space",
+                "designation": "HEAD WIZARD",
+                "name": "PROF. DUMBLEDORE",
                 "role": "Internal Guide"
             }
         ],
         "approvers": {
-            "hod": {
-                "name": "Dr. Rekha Poral",
-                "designation": "Professor & Head",
-                "department": "ECE Department"
-            },
-            "dean": {
-                "name": "Dr. Mohammad",
-                "designation": "Dean",
-                "school": "School of CSE"
-            },
-            "principal": {
-                "name": "Dr. Alil Ahammed",
-                "designation": "Principal"
-            },
             "COE": {
                 "name": "Mr. Alahumad"
+            },
+            "dean": {
+                "designation": "Dean",
+                "name": "Dr. Mohammad",
+                "school": "School of CSE"
+            },
+            "hod": {
+                "department": "ECE Department",
+                "designation": "Professor & Head",
+                "name": "Dr. Rekha Poral"
+            },
+            "principal": {
+                "designation": "Principal",
+                "name": "Dr. Alil Ahammed"
             }
         }
-    },
-    "certificate_info": {
-        "project_type": "kelsa illadha",
-        "certificate_title": "CERTIFICATE",
-        "guide_name": "Prof. Albus Dumbledore",
-        "hod_name": "Dr. Dummy HOD",
-        "dean_name": "Dr. Dummy Dean",
-        "guide_designation": "Assistant Professor\nDepartment of Universal Logic",
-        "hod_designation": "Assistant Professor\nDepartment of Universal Logic",
-        "dean_designation": "Dean, School of CSE\nMVJCE"
     },
     "report_content": {
         "abstract": {
@@ -93,62 +132,23 @@
         "acknowledgement": {
             "standard_text": "We are thankful to {principal_name}, Principal of {college_name} for his encouragement..."
         },
+        "chapters": [],
         "declaration": {
             "text": "We, students of {semester} semester B.E., Department of {department_name}, {college_name}, hereby declare that..."
         },
-        "chapters": [],
         "references": []
     },
-    "ai_content_config": {
-        "enabled": true,
-        "model": "gemini-1.5-flash-8b",
-        "temperature": 0.7,
-        "sections": {
-            "abstract": {
-                "generate": true,
-                "word_limit": 250,
-                "custom_prompt": null
-            },
-            "introduction": {
-                "generate": true,
-                "word_limit": 800,
-                "custom_prompt": null
-            },
-            "literature_survey": {
-                "generate": true,
-                "word_limit": 2000,
-                "custom_prompt": null
-            },
-            "problem_statement": {
-                "generate": true,
-                "word_limit": 500,
-                "custom_prompt": null
-            },
-            "existing_proposed": {
-                "generate": true,
-                "word_limit": 800,
-                "custom_prompt": null
-            },
-            "methodology": {
-                "generate": true,
-                "word_limit": 1000,
-                "custom_prompt": null
-            },
-            "requirements": {
-                "generate": true,
-                "word_limit": 400,
-                "custom_prompt": null
-            },
-            "conclusion": {
-                "generate": true,
-                "word_limit": 400,
-                "custom_prompt": null
-            },
-            "references": {
-                "generate": true,
-                "word_limit": 600,
-                "custom_prompt": null
-            }
-        }
+    "styles": {
+        "guide_label": 14,
+        "guide_name": 14,
+        "header_footer": 10,
+        "project_subtitle": 14,
+        "project_title": 16,
+        "student_details": 14
+    },
+    "submission_info": {
+        "academic_year_range": "2028-30",
+        "date": "[DATE]",
+        "place": "BANGALORE"
     }
 }

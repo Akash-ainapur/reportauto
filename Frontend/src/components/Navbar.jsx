@@ -1,27 +1,11 @@
-import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ChevronRight, User } from "lucide-react";
-import { cn } from "../lib/utils";
-import { auth } from "../firebase";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { Menu, X } from "lucide-react";
+import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
-    const [user, setUser] = useState(null);
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-            setUser(currentUser);
-        });
-        return () => unsubscribe();
-    }, []);
-
-    const handleLogout = async () => {
-        await signOut(auth);
-        navigate("/");
-    };
 
     return (
         <nav className="fixed top-0 w-full z-50 px-4 py-4">
@@ -36,23 +20,17 @@ const Navbar = () => {
                     <a href="/#pricing" className="text-gray-300 hover:text-white transition-colors">Pricing</a>
                     <a href="/#about" className="text-gray-300 hover:text-white transition-colors">About</a>
 
-                    {user ? (
-                        <div className="flex items-center gap-4">
-                            <span className="text-sm text-gray-400 hidden lg:block">{user.email}</span>
-                            <button
-                                onClick={handleLogout}
-                                className="px-4 py-2 rounded-xl bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-all"
-                            >
-                                Logout
-                            </button>
-                        </div>
-                    ) : (
+                    <SignedIn>
+                        <UserButton afterSignOutUrl="/" />
+                    </SignedIn>
+
+                    <SignedOut>
                         <Link to="/auth">
                             <button className="px-6 py-2 rounded-xl bg-primary text-white font-medium hover:bg-primary/80 transition-all shadow-[0_0_20px_rgba(124,58,237,0.5)]">
-                                Get Started
+                                Login / Sign Up
                             </button>
                         </Link>
-                    )}
+                    </SignedOut>
                 </div>
 
                 {/* Mobile Toggle */}
@@ -72,11 +50,17 @@ const Navbar = () => {
                     >
                         <a href="/#features" className="text-lg text-gray-300" onClick={() => setIsOpen(false)}>Features</a>
                         <a href="/#pricing" className="text-lg text-gray-300" onClick={() => setIsOpen(false)}>Pricing</a>
-                        {user ? (
-                            <button onClick={handleLogout} className="text-left text-red-400">Logout</button>
-                        ) : (
+
+                        <SignedIn>
+                            <div className="flex items-center gap-2">
+                                <span className="text-white">Account:</span>
+                                <UserButton afterSignOutUrl="/" />
+                            </div>
+                        </SignedIn>
+
+                        <SignedOut>
                             <Link to="/auth" onClick={() => setIsOpen(false)} className="text-primary font-bold">Login / Sign Up</Link>
-                        )}
+                        </SignedOut>
                     </motion.div>
                 )}
             </AnimatePresence>

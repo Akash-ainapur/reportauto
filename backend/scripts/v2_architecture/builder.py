@@ -9,16 +9,22 @@ from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 
 class ReportContext:
-    def __init__(self, project_root):
+    def __init__(self, project_root, data_file=None):
         self.project_root = project_root
         self.output_dir = os.path.join(project_root, "output")
         self.templates_dir = os.path.join(project_root, "backend", "templates", "template_indivisual")
+        self.data_file = data_file
         self.data = self._load_data()
         
         os.makedirs(self.output_dir, exist_ok=True)
 
     def _load_data(self):
-        json_path = os.path.join(self.project_root, "backend", "data", "full_report_template.json")
+        # Use provided data path or fallback to default
+        if self.data_file:
+            json_path = self.data_file
+        else:
+            json_path = os.path.join(self.project_root, "backend", "data", "full_report_template.json")
+            
         with open(json_path, 'r', encoding='utf-8') as f:
             return json.load(f)
 
