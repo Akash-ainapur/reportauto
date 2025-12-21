@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
-import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
+import { SignedIn, SignedOut, UserButton, SignInButton } from "@clerk/clerk-react";
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -25,11 +25,11 @@ const Navbar = () => {
                     </SignedIn>
 
                     <SignedOut>
-                        <Link to="/auth">
+                        <SignInButton mode="modal">
                             <button className="px-6 py-2 rounded-xl bg-primary text-white font-medium hover:bg-primary/80 transition-all shadow-[0_0_20px_rgba(124,58,237,0.5)]">
                                 Login / Sign Up
                             </button>
-                        </Link>
+                        </SignInButton>
                     </SignedOut>
                 </div>
 
@@ -59,7 +59,11 @@ const Navbar = () => {
                         </SignedIn>
 
                         <SignedOut>
-                            <Link to="/auth" onClick={() => setIsOpen(false)} className="text-primary font-bold">Login / Sign Up</Link>
+                            <SignInButton mode="modal">
+                                <button onClick={() => setIsOpen(false)} className="text-primary font-bold">
+                                    Login / Sign Up
+                                </button>
+                            </SignInButton>
                         </SignedOut>
                     </motion.div>
                 )}

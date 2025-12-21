@@ -24,57 +24,14 @@ const Footer = () => {
                     </ul>
                 </div>
 
-                {/* Contributors */}
+                {/* Contributors Removed as per request */}
                 <div className="space-y-3 md:text-right">
-                    <p className="text-sm text-gray-300 flex md:justify-end items-center gap-2">
-                        Made with <Heart className="w-4 h-4 text-red-500 fill-red-500" /> by
-                    </p>
-
-                    <div className="flex flex-col gap-3 md:items-end">
-
-                        {/* Contributor 1 */}
-                        <div className="flex items-center gap-3 bg-white/5 rounded-full px-4 py-2 hover:bg-white/10 transition-colors">
-                            <span className="text-white font-medium text-sm">Akshay H</span>
-                            <div className="flex gap-2">
-                                <a
-                                    href="https://www.linkedin.com/in/akshay-h-335abb293"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-blue-400 hover:text-blue-300 transition-colors"
-                                >
-                                    <Linkedin className="w-4 h-4" />
-                                </a>
-                                <a
-                                    href="#"
-                                    className="text-pink-400 hover:text-pink-300 transition-colors"
-                                >
-                                    <Instagram className="w-4 h-4" />
-                                </a>
-                            </div>
-                        </div>
-
-                        {/* Contributor 2 */}
-                        <div className="flex items-center gap-3 bg-white/5 rounded-full px-4 py-2 hover:bg-white/10 transition-colors">
-                            <span className="text-white font-medium text-sm">Akash Ainapur</span>
-                            <div className="flex gap-2">
-                                <a
-                                    href="https://linkedin.com/in/akashainapur"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-blue-400 hover:text-blue-300 transition-colors"
-                                >
-                                    <Linkedin className="w-4 h-4" />
-                                </a>
-                                <a
-                                    href="#"
-                                    className="text-pink-400 hover:text-pink-300 transition-colors"
-                                >
-                                    <Instagram className="w-4 h-4" />
-                                </a>
-                            </div>
-                        </div>
-
-                    </div>
+                    {/* Empty placeholder to maintain grid layout or remove if you want 2 cols. 
+                        User asked to remove "made by...". 
+                        I will just remove the content but keep the div or remove it.
+                        Grid is md:grid-cols-3. Ideally I switch to grid-cols-2 or leave empty/logo.
+                        Let's just remove the text content.
+                    */}
                 </div>
             </div>
 

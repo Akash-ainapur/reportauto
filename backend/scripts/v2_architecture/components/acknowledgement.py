@@ -13,20 +13,30 @@ class AcknowledgementGenerator(BaseSectionGenerator):
         return doc
 
     def _process_acknowledgement(self, doc):
-        approvers = self.data["people"]["approvers"]
-        guide = self.data["people"]["guide"][0]
+        approvers = self.data["people"].get("approvers", {})
+        
+        # Helper to safely get approver data
+        def get_approver(role, field, default):
+            return approvers.get(role, {}).get(field, default)
+
+        # Safe Guide Access
+        guides = self.data["people"].get("guide", [])
+        if guides and len(guides) > 0:
+            guide = guides[0]
+        else:
+            guide = {"name": "[GUIDE NAME]", "designation": "Assistant Professor", "department": "[DEPT]"}
 
         replacements = [
-            (r"Dr\.\s*Ajayan\s*K\s*R", approvers["principal"]["name"], True, True, None, None),
+            (r"Dr\.\s*Ajayan\s*K\s*R", get_approver("principal", "name", "Dr. Ajayan K R"), True, True, None, None),
             (r"Principal\s+of\s+MVJCE", "Principal of MVJCE", True, True, None, None),
-            (r"Dr\.\s*I\s*Hameem\s*Shanavas", approvers["dean"]["name"], True, True, None, None),
+            (r"Dr\.\s*I\s*Hameem\s*Shanavas", get_approver("dean", "name", "Dr. I Hameem Shanavas"), True, True, None, None),
             (r"Dean,\s*School\s+of\s+CSE,\s*MVJCE", "Dean, School of CSE, MVJCE", True, True, None, None),
-            (r"Mr\.\s*Kumar\s*R", approvers["COE"]["name"], True, True, None, None),
+            (r"Mr\.\s*Kumar\s*R", get_approver("COE", "name", "Mr. Kumar R"), True, True, None, None),
             (r"Controller\s+Of\s+Examinations", "Controller Of Examinations", True, True, None, None),
-            (r"Dr\.\s*Kiran\s*Babu\s*T\s*S", approvers["hod"]["name"], True, True, None, None),
-            (r"Mrs\.\s*Sumanjali\s*M", guide["name"], True, True, None, None),
-            (r"Assistant\s+Professor|HEAD\s+WIZARD", guide["designation"], True, True, None, None),
-            (r"CSE\s+Department|ECE\s+Department", guide["department"], True, True, None, None),
+            (r"Dr\.\s*Kiran\s*Babu\s*T\s*S", get_approver("hod", "name", "Dr. Kiran Babu T S"), True, True, None, None),
+            (r"Mrs\.\s*Sumanjali\s*M", guide.get("name", "[GUIDE NAME]"), True, True, None, None),
+            (r"Assistant\s+Professor|HEAD\s+WIZARD", guide.get("designation", "Assistant Professor"), True, True, None, None),
+            (r"CSE\s+Department|ECE\s+Department", guide.get("department", "CSE Department"), True, True, None, None),
         ]
 
         self._process_paragraphs(doc.paragraphs, replacements)

@@ -1,0 +1,58 @@
+{
+    "CSE": {
+        "name": "Computer Science and Engineering",
+        "short": "CSE",
+        "hod": {
+            "name": "Dr. Rekha Poral",
+            "designation": "Professor & Head",
+            "department": "Department of Computer Science & Engineering"
+        },
+        "dean": {
+            "name": "Dr. Mohammad",
+            "designation": "Dean",
+            "school": "School of CSE"
+        }
+    },
+    "ECE": {
+        "name": "Electronics and Communication Engineering",
+        "short": "ECE",
+        "hod": {
+            "name": "Dr. I. Hameem Shanavas",
+            "designation": "Professor & Head",
+            "department": "Department of Electronics & Communication Engineering"
+        },
+        "dean": {
+            "name": "Dr. I. Hameem Shanavas",
+            "designation": "Dean",
+            "school": "School of ECE"
+        }
+    },
+    "ISE": {
+        "name": "Information Science and Engineering",
+        "short": "ISE",
+        "hod": {
+            "name": "Dr. Sanchari Saha",
+            "designation": "Professor & Head",
+            "department": "Department of Information Science & Engineering"
+        },
+        "dean": {
+            "name": "Dr. Mohammad",
+            "designation": "Dean",
+            "school": "School of CSE"
+        }
+    },
+    "AIML": {
+        "name": "Artificial Intelligence and Machine Learning",
+        "short": "AIML",
+        "hod": {
+            "name": "Dr. Sanchari Saha",
+            "designation": "Professor & Head",
+            "department": "Department of AIML"
+        },
+        "dean": {
+            "name": "Dr. Mohammad",
+            "designation": "Dean",
+            "school": "School of CSE"
+        }
+    }
+}

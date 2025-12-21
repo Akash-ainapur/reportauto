@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useAuth } from "@clerk/clerk-react";
 import Navbar from "../components/Navbar";
 import GlassCard from "../components/GlassCard";
 import Footer from "../components/Footer";
@@ -12,6 +13,7 @@ const ReportConfig = () => {
     const API_BASE = import.meta.env.VITE_API_URL || "";
     // Generate unique session ID on mount
     const [sessionId] = useState(() => crypto.randomUUID());
+    const { getToken, userId } = useAuth();
 
     const [data, setData] = useState({
         global_metadata: {},
@@ -34,273 +36,204 @@ const ReportConfig = () => {
     }, []);
 
 
+    const [context, setContext] = useState({ departments: [], years: [] });
+    const [selectedContext, setSelectedContext] = useState({ dept: "", year: "" });
+
     useEffect(() => {
-        const fetchData = async () => {
-            const timeoutPromise = new Promise((_, reject) =>
-                setTimeout(() => reject(new Error("Request timed out")), 5000)
-            );
-
+        // Fetch Context Data (Depts, Years)
+        const fetchContext = async () => {
             try {
-                const fetchPromise = fetch(`${API_BASE}/api/data`);
-                const response = await Promise.race([fetchPromise, timeoutPromise]);
-
-                if (response.ok) {
-                    const jsonData = await response.json();
-                    const safeData = {
-                        ...jsonData,
-                        people: {
-                            students: jsonData.people?.students || [],
-                            guide: jsonData.people?.guide || [],
-                            approvers: jsonData.people?.approvers || {}
-                        }
-                    };
-                    setData(safeData);
-                } else {
-                    showMessage("Failed to load data. Is backend running?", "error");
+                const token = await getToken();
+                const res = await fetch(`${API_BASE}/api/context-data`, {
+                    headers: { "Authorization": `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const cData = await res.json();
+                    setContext(cData);
+                    // Set defaults if available - optional
                 }
-            } catch (error) {
-                console.error(error);
-                const errMsg = error.message === "Request timed out"
-                    ? "Backend not responding (Timeout)"
-                    : "Backend not connected. Run 'python app.py'";
-                showMessage(errMsg, "error");
-            } finally {
-                setLoading(false);
-            }
+            } catch (e) { console.error("Context load failed", e); }
+            setLoading(false); // Stop loading regardless
         };
+        fetchContext();
+    }, [API_BASE]);
 
-        fetchData();
-    }, [API_BASE, showMessage]);
+    const handleContextChange = async (type, value) => {
+        const newContext = { ...selectedContext, [type]: value };
+        setSelectedContext(newContext);
+
+        if (newContext.dept && newContext.year) {
+            // Fetch Defaults
+            try {
+                const token = await getToken();
+                const res = await fetch(`${API_BASE}/api/defaults?dept=${newContext.dept}&year=${newContext.year}`, {
+                    headers: { "Authorization": `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const defaults = await res.json();
+
+                    // Merge smartly: Don't overwrite user fields if they typed something? 
+                    // Actually prompt implies "starts blank" then "populates". 
+                    // If user switches dept, they probably WANT to reset fixed fields.
+
+                    setData(prev => {
+                        const isTest = newContext.dept === "TEST DEPARTMENT";
+                        return {
+                            ...defaults,
+                            global_metadata: {
+                                ...defaults.global_metadata,
+                                project_title: isTest ? (defaults.global_metadata.project_title || "") : (prev.global_metadata.project_title || ""),
+                                project_subtitle: isTest ? (defaults.global_metadata.project_subtitle || "") : (prev.global_metadata.project_subtitle || ""),
+                                domain: isTest ? (defaults.global_metadata.domain || "") : (prev.global_metadata.domain || ""),
+                                project_type: isTest ? (defaults.global_metadata.project_type || "") : (prev.global_metadata.project_type || ""),
+                                course_name: isTest ? (defaults.global_metadata.course_name || "") : (prev.global_metadata.course_name || "")
+                            },
+                            people: {
+                                ...defaults.people,
+                                students: (isTest || prev.people.students.length === 0) ? defaults.people.students : prev.people.students,
+                                guide: (isTest || prev.people.guide.length === 0) ? defaults.people.guide : prev.people.guide
+                            },
+                            ai_context: isTest ? (defaults.ai_context || "") : (prev.ai_context || "")
+                        };
+                    });
+                }
+            } catch (e) { showMessage("Failed to load defaults", "error"); }
+        }
+    };
+
+    // Helper to determine if a field is "Fixed" (Institution related)
+    const isFixedField = (id) => {
+        const fixed = ["college_name", "department_name", "department_abbr", "department_short", "city_code", "pincode", "college_address", "academic_year", "semester"];
+        return fixed.includes(id);
+    };
+
+    // Field ReadOnly Logic: Fixed fields are ReadOnly in Autopilot.
+    const isReadOnly = (id) => {
+        if (aiMode === "director") return false;
+        return isFixedField(id);
+    };
+
+    // Styles for ReadOnly inputs
+    const inputClasses = (id) => cn(
+        "w-full bg-black/20 border border-white/10 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-primary/50 outline-none transition-all focus:bg-black/40",
+        isReadOnly(id) && "opacity-60 cursor-not-allowed bg-black/40 border-transparent"
+    );
+
 
     const handleChange = (section, field, value) => {
         setData(prev => ({
             ...prev,
-            [section]: {
-                ...prev[section],
-                [field]: value
-            }
+            [section]: field ? { ...prev[section], [field]: value } : value
         }));
     };
 
     const handleNestedChange = (path, value) => {
         const keys = path.split('.');
         setData(prev => {
-            const newState = JSON.parse(JSON.stringify(prev));
-            let current = newState;
+            const newData = { ...prev };
+            let current = newData;
             for (let i = 0; i < keys.length - 1; i++) {
                 if (!current[keys[i]]) current[keys[i]] = {};
                 current = current[keys[i]];
             }
             current[keys[keys.length - 1]] = value;
-            return newState;
+            return newData;
         });
     };
 
     const updateArrayItem = (arrayName, index, field, value) => {
-        setData(prev => {
-            const newArray = [...(prev.people[arrayName] || [])];
-            if (!newArray[index]) newArray[index] = {};
-            newArray[index] = { ...newArray[index], [field]: value };
-            return {
-                ...prev,
-                people: {
-                    ...prev.people,
-                    [arrayName]: newArray
-                }
-            };
-        });
+        setData(prev => ({
+            ...prev,
+            people: {
+                ...prev.people,
+                [arrayName]: prev.people[arrayName].map((item, i) =>
+                    i === index ? { ...item, [field]: value } : item
+                )
+            }
+        }));
     };
 
     const handleDownloadProcess = async () => {
         setGenerating(true);
-        // setShowDownload(false); // No longer needed as we auto-download
-        setMessage({ text: "Saving configuration...", type: "info" });
-        setProgress(5);
-
+        setProgress(0);
         try {
-            // 1. Send Data & Start Generation (One Step)
-            // We send 'data' in body, and 'sessionId' in Query param
-            const response = await fetch(`${API_BASE}/api/generate?session_id=${sessionId}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
+            const token = await getToken();
+            const authHeaders = {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            };
+
+            // 1. Start Generation
+            const startRes = await fetch(`${API_BASE}/api/generate`, {
+                method: "POST",
+                headers: authHeaders,
+                body: JSON.stringify({ ...data, session_id: sessionId })
             });
 
-            if (response.status === 409) {
-                setGenerating(false);
-                showMessage("Server busy! Someone else is generating. Please wait 30s.", "warning");
-                return;
+            if (!startRes.ok) {
+                if (startRes.status === 402) throw new Error("Free limit reached! Upgrade plan.");
+                else throw new Error("Failed to start generation");
             }
 
-            if (response.status === 202 || response.status === 200) {
-                // 2. Poll for Status
-                const pollInterval = setInterval(async () => {
-                    try {
-                        const statusRes = await fetch(`${API_BASE}/api/status?session_id=${sessionId}`);
-                        const status = await statusRes.json();
+            const { session_id } = await startRes.json();
 
-                        // Update Loading Message
-                        if (status.current_step) {
-                            // setProgressMsg(status.current_step); // Not using progressMsg state currently finding by view_file
-                            // wait, I don't see setProgressMsg in view_file. Let's look at view_file content.
-                            // Line 24 in view_file: const [progress, setProgress] = useState(0); 
-                            // Line 26: const [message, setMessage] = useState...
-                            // Actually there is NO progressMsg state in the file I viewed! 
-                            // Ah, GamifiedLoader might take just progress.
-                            // I should update message using setMessage or showMessage if I want to show status text.
-                            // Let's use showMessage for major updates or just let progress bar handle it.
-                        }
+            // 2. Poll for Completion
+            const pollInterval = setInterval(async () => {
+                try {
+                    const statusRes = await fetch(`${API_BASE}/api/status?session_id=${session_id}`);
+                    if (!statusRes.ok) return;
 
-                        // Update Progress
-                        if (status.progress) {
-                            const pct = Math.min(100, (status.progress / 14) * 100);
-                            setProgress(pct);
-                        }
+                    const statusData = await statusRes.json();
 
-                        if (!status.running && status.completed) {
-                            clearInterval(pollInterval);
-                            setGenerating(false);
-                            setProgress(100);
-                            showMessage('Report Ready! Downloading...', 'success');
-                            triggerConfetti();
+                    // Update Progress (0-100%)
+                    // Assume 14 steps total
+                    const pct = Math.min(Math.round((statusData.progress / 14) * 100), 99);
+                    setProgress(pct);
 
-                            // 3. Trigger Download
-                            window.location.href = `${API_BASE}/api/download?session_id=${sessionId}`;
-                        } else if (status.error) {
-                            clearInterval(pollInterval);
-                            setGenerating(false);
-                            showMessage('Error: ' + status.error, 'error');
-                        }
-                    } catch (err) {
-                        console.error("Polling error", err);
+                    if (statusData.error) {
                         clearInterval(pollInterval);
                         setGenerating(false);
-                        showMessage("Lost connection to server.", "error");
+                        showMessage(`Error: ${statusData.error}`, "error");
                     }
-                }, 1500);
 
-            } else {
-                const result = await response.json();
-                setGenerating(false);
-                showMessage('Error: ' + (result.message || 'Unknown error'), 'error');
-            }
-        } catch (error) {
-            console.error("Generate error:", error);
-            setGenerating(false);
-            showMessage('Network connection error.', 'error');
-        }
-    };
+                    if (statusData.completed) {
+                        clearInterval(pollInterval);
+                        setProgress(100);
 
+                        // 3. Download File
+                        const downloadRes = await fetch(`${API_BASE}/api/download?session_id=${session_id}`, {
+                            headers: { "Authorization": `Bearer ${token}` }
+                        });
 
-
-    const handleSave = async (e) => {
-        if (e) e.preventDefault();
-        setMessage({ text: "Saving...", type: "info" });
-        try {
-            const response = await fetch(`${API_BASE}/api/data`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-            if (response.ok) {
-                showMessage("Configuration saved successfully!", "success");
-                return true;
-            } else {
-                showMessage("Failed to save configuration", "error");
-                return false;
-            }
-        } catch (error) {
-            console.error("Save error:", error);
-            showMessage("Error saving configuration", "error");
-            return false;
-        }
-    };
-
-
-    const handleGenerate = async () => {
-        // Auto-save before generating
-        const saved = await handleSave();
-        if (!saved) return;
-
-        setGenerating(true);
-        setShowDownload(false);
-        setProgress(0);
-
-        try {
-            const response = await fetch(`${API_BASE}/api/generate`, { method: 'POST' });
-
-            if (response.status === 409) {
-                setGenerating(false);
-                showMessage("Server busy! Someone else is generating. Please wait 30s.", "warning");
-                return;
-            }
-
-            if (response.status === 202 || response.status === 200) {
-                const pollInterval = setInterval(async () => {
-                    try {
-                        const statusRes = await fetch(`${API_BASE}/api/status`);
-                        const status = await statusRes.json();
-
-                        // Update Progress
-                        if (status.progress) {
-                            // Assuming 14 steps max
-                            const pct = Math.min(100, (status.progress / 14) * 100);
-                            setProgress(pct);
+                        if (downloadRes.ok) {
+                            const blob = await downloadRes.blob();
+                            const url = window.URL.createObjectURL(blob);
+                            const a = document.createElement("a");
+                            a.href = url;
+                            a.download = `Report_${data.global_metadata?.project_title || "Project"}.docx`;
+                            document.body.appendChild(a);
+                            a.click();
+                            window.URL.revokeObjectURL(url);
+                            confetti();
+                            showMessage("Report downloaded successfully!", "success");
+                        } else {
+                            showMessage("Download failed after generation.", "error");
                         }
-
-                        if (!status.running) {
-                            clearInterval(pollInterval);
-                            setGenerating(false);
-                            setProgress(100);
-
-                            if (status.error) {
-                                showMessage('Error: ' + status.error, 'error');
-                            } else {
-                                showMessage('Report Generated Successfully!', 'success');
-                                triggerConfetti();
-                                setShowDownload(true);
-                            }
-                        }
-                    } catch (err) {
-                        console.error("Polling error", err);
+                        setGenerating(false);
                     }
-                }, 1500);
+                } catch (e) {
+                    console.error("Polling error", e);
+                    // Don't stop immediately on one polling error, might be transient
+                }
+            }, 1000); // Poll every 1s
 
-            } else {
-                const result = await response.json();
-                setGenerating(false);
-                showMessage('Error: ' + (result.message || 'Unknown error'), 'error');
-            }
-        } catch (error) {
-            console.error("Generation error:", error);
+        } catch (e) {
+            console.error(e);
             setGenerating(false);
-            showMessage('Network connection error. Check backend.', 'error');
+            showMessage(e.message || "Network error", "error");
         }
     };
 
-    const triggerConfetti = () => {
-        const duration = 3 * 1000;
-        const animationEnd = Date.now() + duration;
-        const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
-
-        const randomInRange = (min, max) => Math.random() * (max - min) + min;
-
-        const interval = setInterval(function () {
-            const timeLeft = animationEnd - Date.now();
-
-            if (timeLeft <= 0) {
-                return clearInterval(interval);
-            }
-
-            const particleCount = 50 * (timeLeft / duration);
-            confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
-            confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
-        }, 250);
-    };
-
-    const handleDownload = () => {
-        window.location.href = `${API_BASE}/api/download`;
-    };
 
     if (loading) return <div className="text-white text-center pt-20">Loading configuration...</div>;
 
@@ -339,7 +272,7 @@ const ReportConfig = () => {
                         Design Your Report
                     </h1>
                     <p className="text-gray-400 max-w-xl mx-auto">
-                        Fill in the details below. Choose "Autopilot" for quick generation or "Director" for full control.
+                        Select your Department & Year to auto-fill college details. Then simply add your project title and the AI context.
                     </p>
 
                     {/* AI Mode Toggle */}
@@ -379,7 +312,38 @@ const ReportConfig = () => {
 
                 <form className="space-y-8 animate-in fade-in slide-in-from-bottom duration-700" onSubmit={(e) => { e.preventDefault(); handleDownloadProcess(); }}>
 
-                    {/* Global Metadata - Always Visible */}
+                    {/* CONTEXT SELECTOR */}
+                    <GlassCard className="p-8 border-primary/30">
+                        <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                            Start Here
+                        </h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium text-gray-300">Department</label>
+                                <select
+                                    value={selectedContext.dept}
+                                    onChange={(e) => handleContextChange("dept", e.target.value)}
+                                    className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-primary/50 outline-none cursor-pointer"
+                                >
+                                    <option value="" disabled>Select Department</option>
+                                    {context.departments.map(d => <option key={d} value={d} className="bg-gray-900">{d}</option>)}
+                                </select>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium text-gray-300">Academic Year</label>
+                                <select
+                                    value={selectedContext.year}
+                                    onChange={(e) => handleContextChange("year", e.target.value)}
+                                    className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-primary/50 outline-none cursor-pointer"
+                                >
+                                    <option value="" disabled>Select Year</option>
+                                    {context.years.map(y => <option key={y} value={y} className="bg-gray-900">{y}</option>)}
+                                </select>
+                            </div>
+                        </div>
+                    </GlassCard>
+
+                    {/* Global Metadata */}
                     <GlassCard className="p-8 relative overflow-hidden group">
                         <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                             <Bot className="w-24 h-24 text-primary" />
@@ -388,11 +352,16 @@ const ReportConfig = () => {
                             <Bot className="w-6 h-6 text-primary" />
                             Core Details
                         </h2>
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
                             {[
                                 { id: "project_title", label: "Project Title", req: true },
                                 { id: "project_subtitle", label: "Project Subtitle" },
+                                // User defined
                                 { id: "domain", label: "Domain" },
+                                { id: "project_type", label: "Project Type" },
+                                { id: "course_name", label: "Course Name" },
+                                // Fixed / Auto-Filled
                                 { id: "academic_year", label: "Academic Year" },
                                 { id: "semester", label: "Semester" },
                                 { id: "college_name", label: "College Name" },
@@ -402,18 +371,20 @@ const ReportConfig = () => {
                                 { id: "city_code", label: "City Code" },
                                 { id: "pincode", label: "Pincode" },
                                 { id: "college_address", label: "College Address" },
-                                { id: "project_type", label: "Project Type" },
-                                { id: "course_name", label: "Course Name" },
                             ].map((field) => (
                                 <div key={field.id} className="space-y-2">
-                                    <label className="text-sm font-medium text-gray-300">{field.label}</label>
+                                    <label className="text-sm font-medium text-gray-300 flex justify-between">
+                                        {field.label}
+                                        {isFixedField(field.id) && aiMode === "autopilot" && <span className="text-xs text-primary/70">(Auto-Filled)</span>}
+                                    </label>
                                     <input
                                         type="text"
                                         required={field.req}
                                         value={data.global_metadata?.[field.id] || ""}
                                         onChange={(e) => handleChange("global_metadata", field.id, e.target.value)}
-                                        className="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-3 text-white focus:ring-2 focus:ring-primary/50 outline-none transition-all focus:bg-black/40"
-                                        placeholder={`Enter ${field.label}...`}
+                                        readOnly={isReadOnly(field.id)}
+                                        className={inputClasses(field.id)}
+                                        placeholder={isReadOnly(field.id) ? "Autofilled..." : `Enter ${field.label}...`}
                                     />
                                 </div>
                             ))}
@@ -452,7 +423,18 @@ const ReportConfig = () => {
                                     </div>
                                 </div>
                             ))}
-                            {data.people.students.length === 0 && <p className="text-gray-500 italic">No students found in data.</p>}
+                            {data.people.students.length === 0 && (
+                                <div className="text-center py-8">
+                                    <p className="text-gray-500 italic mb-4">No students added yet.</p>
+                                    <button
+                                        type="button"
+                                        onClick={() => setData(prev => ({ ...prev, people: { ...prev.people, students: [...prev.people.students, { name: "", usn: "" }, { name: "", usn: "" }, { name: "", usn: "" }, { name: "", usn: "" }] } }))}
+                                        className="text-primary hover:text-primary/80 underline"
+                                    >
+                                        Add 4 Students (Standard Team)
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </GlassCard>
 
@@ -477,8 +459,46 @@ const ReportConfig = () => {
                                     </div>
                                 </div>
                             ))}
+                            {data.people.guide.length === 0 && (
+                                <div className="text-center py-4">
+                                    <button
+                                        type="button"
+                                        onClick={() => setData(prev => ({ ...prev, people: { ...prev.people, guide: [...prev.people.guide, { name: "", designation: "", department: "", role: "Internal Guide" }] } }))}
+                                        className="text-primary hover:text-primary/80 underline"
+                                    >
+                                        Add Guide
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </GlassCard>
+
+                    {/* AI Project Context - NEW */}
+                    <GlassCard className="p-8 border-green-500/30 relative overflow-hidden">
+                        <div className="absolute -right-10 -top-10 w-40 h-40 bg-green-500/10 rounded-full blur-3xl"></div>
+                        <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+                            <Sparkles className="w-6 h-6 text-green-400" />
+                            AI Project Context
+                        </h2>
+                        <p className="text-gray-400 text-sm mb-4">
+                            Paste your project abstract, problem statement, rough notes, or even code snippets here.
+                            The AI will use this single source to generate the entire report content (Abstract, Introduction, etc.).
+                        </p>
+                        <textarea
+                            value={data.ai_context || ""}
+                            onChange={(e) => handleChange("ai_context", null, e.target.value)}
+                            // handleChange usually takes (section, field, value). 
+                            // But ai_context is root level in my plan? 
+                            // Wait, handleChange implementation: setData(prev => ({...prev, [section]: { ...prev[section], [field]: value } }));
+                            // This expects nested.
+                            // I should fix handleChange or use a direct setter.
+                            // Let's use a direct setter for root level or adjust handleChange.
+                            // Let's modify: onChange={(e) => setData(prev => ({ ...prev, ai_context: e.target.value }))}
+                            className="w-full bg-black/20 border border-green-500/20 rounded-xl px-6 py-4 text-white focus:ring-2 focus:ring-green-500/50 outline-none min-h-[200px] font-mono text-sm leading-relaxed"
+                            placeholder="Example: My project is about a Smart Irrigation System using IoT. It uses Arduino, Moisture Sensors, and a Python backend. It solves the problem of water wastage in agriculture..."
+                        />
+                    </GlassCard>
+
 
                     {/* DIRECTOR MODE SECTIONS */}
                     {aiMode === "director" && (

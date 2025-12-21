@@ -17,20 +17,31 @@ class FrontPageGenerator(BaseSectionGenerator):
 
     def _process_front_page(self, doc):
         meta = self.meta
-        guide = self.data["people"]["guide"][0]
+        
+        # Safe Guide Extraction
+        guides = self.data["people"].get("guide", [])
+        if guides and len(guides) > 0:
+            guide = guides[0]
+        else:
+            guide = {
+                "name": "[GUIDE NAME]",
+                "designation": "[DESIGNATION]",
+                "department": "[DEPARTMENT]"
+            }
+            
         styles = self.data.get("styles", {})
         
         # Replacements Mapping
         replacements = {
             "A PROJECT PHASE I REPORT": "Makabulla Project Phase I Report",
-            "HAZARD WASTE DETECTION USING AI AND IOT": meta["project_title"],
-            "MVJ NEXTGEN EDUCLOUD:AI-BASED ACADEMIC RESOURCE MANAGER": meta["project_subtitle"],
+            "HAZARD WASTE DETECTION USING AI AND IOT": meta.get("project_title", "PROJECT TITLE"),
+            "MVJ NEXTGEN EDUCLOUD:AI-BASED ACADEMIC RESOURCE MANAGER": meta.get("project_subtitle", ""),
             "BACHELOR OF ENGINEERING": "BACHELOR OF ENGINEERING",
-            "COMPUTER SCIENCE & ENGINEERING": meta["department_name"].replace("DEPARTMENT OF ", ""),
-            "DEPARTMENT OF COMPUTER SCIENCE & ENGINEERING": meta["department_name"],
-            "MVJ COLLEGE OF ENGINEERING": meta["college_name"],
-            "BANGALORE - 67": meta["city_code"],
-            "ACADEMIC YEAR 2024 - 2025": f"ACADEMIC YEAR {meta['academic_year']}",
+            "COMPUTER SCIENCE & ENGINEERING": meta.get("department_name", "DEPARTMENT OF COMPUTER SCIENCE & ENGINEERING").replace("DEPARTMENT OF ", ""),
+            "DEPARTMENT OF COMPUTER SCIENCE & ENGINEERING": meta.get("department_name", "DEPARTMENT OF COMPUTER SCIENCE & ENGINEERING"),
+            "MVJ COLLEGE OF ENGINEERING": meta.get("college_name", "MVJ COLLEGE OF ENGINEERING"),
+            "BANGALORE - 67": meta.get("city_code", "BANGALORE - 67"),
+            "ACADEMIC YEAR 2024 - 2025": f"ACADEMIC YEAR {meta.get('academic_year', '2024-25')}",
             "Assistant Professor, Department of CSE": f"{guide['designation'].title()}, {guide['department'].title()}",
             "Under the Guidance of": "Under the Guidance of",
         }
@@ -98,10 +109,10 @@ class FrontPageGenerator(BaseSectionGenerator):
                             run.text = re.sub(pattern, replacement, run.text)
             
             dept_replacements = {
-                "COMPUTER SCIENCE & ENGINEERING": meta["department_name"].replace("DEPARTMENT OF ", ""),
-                "DEPARTMENT OF COMPUTER SCIENCE & ENGINEERING": meta["department_name"],
-                "CSE": meta["department_abbr"],
-                "Computer Science": meta["department_name"],
+                "COMPUTER SCIENCE & ENGINEERING": meta.get("department_name", "DEPARTMENT OF COMPUTER SCIENCE & ENGINEERING").replace("DEPARTMENT OF ", ""),
+                "DEPARTMENT OF COMPUTER SCIENCE & ENGINEERING": meta.get("department_name", "DEPARTMENT OF COMPUTER SCIENCE & ENGINEERING"),
+                "CSE": meta.get("department_abbr", "CSE"),
+                "Computer Science": meta.get("department_name", "Computer Science"),
             }
             for old, new in dept_replacements.items():
                 if old in full_text:

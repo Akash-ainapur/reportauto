@@ -83,7 +83,7 @@ class GeminiService:
         
         try:
             genai.configure(api_key=self.api_key)
-            self.model = genai.GenerativeModel('gemini-1.5-flash-8b')
+            self.model = genai.GenerativeModel('gemini-flash-lite-latest')
             self.is_configured = True
             print("✅ Gemini API configured successfully")
         except Exception as e:
@@ -126,7 +126,7 @@ class GeminiService:
                 # Create model with system instruction if provided
                 if system_instruction:
                     model = genai.GenerativeModel(
-                        'gemini-flash-latest',
+                        'gemini-flash-lite-latest',
                         system_instruction=system_instruction
                     )
                 else:

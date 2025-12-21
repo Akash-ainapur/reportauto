@@ -2,7 +2,8 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { Sparkles } from "lucide-react";
+import { Sparkles, ArrowRight } from "lucide-react";
+import { SignInButton, SignedIn, SignedOut } from "@clerk/clerk-react";
 
 const LandingPage = () => {
     return (
@@ -35,14 +36,28 @@ const LandingPage = () => {
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.5 }}
-                        className="pt-4"
+                        className="pt-8 flex justify-center"
                     >
-                        <Link to="/generate">
-                            <button className="group relative px-10 py-5 rounded-full bg-white text-black text-xl font-bold hover:scale-105 transition-all shadow-[0_0_50px_rgba(255,255,255,0.2)] hover:shadow-[0_0_70px_rgba(255,255,255,0.4)] flex items-center gap-3 mx-auto">
-                                <Sparkles className="w-6 h-6 text-purple-600 group-hover:rotate-12 transition-transform" />
-                                Get Started
-                            </button>
-                        </Link>
+                        <SignedOut>
+                            <SignInButton mode="modal">
+                                <button className="group relative px-8 py-4 bg-white text-black text-lg font-bold rounded-full overflow-hidden transition-all hover:scale-105 hover:shadow-[0_0_40px_rgba(255,255,255,0.5)]">
+                                    <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-pink-400 opacity-0 group-hover:opacity-20 transition-opacity" />
+                                    <span className="flex items-center gap-2">
+                                        Get Started <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                    </span>
+                                </button>
+                            </SignInButton>
+                        </SignedOut>
+
+                        <SignedIn>
+                            <Link to="/generate">
+                                <button className="group relative px-8 py-4 bg-gradient-to-r from-primary to-purple-600 text-white text-lg font-bold rounded-full overflow-hidden transition-all hover:scale-105 hover:shadow-[0_0_40px_rgba(168,85,247,0.5)]">
+                                    <span className="flex items-center gap-2">
+                                        Go to Dashboard <Sparkles className="w-5 h-5 animate-pulse" />
+                                    </span>
+                                </button>
+                            </Link>
+                        </SignedIn>
                     </motion.div>
                 </div>
             </div>

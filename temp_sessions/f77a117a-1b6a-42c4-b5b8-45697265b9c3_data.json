@@ -1,0 +1,156 @@
+{
+    "__comment": "Master Data Source for Automated Report Generation",
+    "ai_content_config": {
+        "enabled": true,
+        "model": "gemini-1.5-flash-8b",
+        "sections": {
+            "abstract": {
+                "custom_prompt": null,
+                "generate": true,
+                "word_limit": 250
+            },
+            "conclusion": {
+                "custom_prompt": null,
+                "generate": true,
+                "word_limit": 400
+            },
+            "existing_proposed": {
+                "custom_prompt": null,
+                "generate": true,
+                "word_limit": 800
+            },
+            "introduction": {
+                "custom_prompt": null,
+                "generate": true,
+                "word_limit": 800
+            },
+            "literature_survey": {
+                "custom_prompt": null,
+                "generate": true,
+                "word_limit": 2000
+            },
+            "methodology": {
+                "custom_prompt": null,
+                "generate": true,
+                "word_limit": 1000
+            },
+            "problem_statement": {
+                "custom_prompt": null,
+                "generate": true,
+                "word_limit": 500
+            },
+            "references": {
+                "custom_prompt": null,
+                "generate": true,
+                "word_limit": 600
+            },
+            "requirements": {
+                "custom_prompt": null,
+                "generate": true,
+                "word_limit": 400
+            }
+        },
+        "temperature": 0.7
+    },
+    "ai_context": "My project is about using YOLOv8 for real-time traffic surveillance. It identifies congestion, license plates, and emergency vehicles. It uses a Python backend with a React dashboard.",
+    "certificate_info": {
+        "certificate_title": "CERTIFICATE",
+        "dean_designation": "Dean, School of CSE\nMVJCE",
+        "dean_name": "Dr. Dummy Dean",
+        "guide_designation": "Assistant Professor\nDepartment of Universal Logic",
+        "guide_name": "Prof. Albus Dumbledore",
+        "hod_designation": "Assistant Professor\nDepartment of Universal Logic",
+        "hod_name": "Dr. Dummy HOD",
+        "project_type": "kelsa illadha"
+    },
+    "global_metadata": {
+        "academic_year": "2024-25",
+        "city_code": "Bangalore - 67",
+        "college_address": "Near ITPB, Whitefield, Bangalore \u00e2\u20ac\u201c 560067",
+        "college_name": "MVJ College of Engineering",
+        "course_name": "Bachelor of Engineering in CSE",
+        "department_abbr": "CSE",
+        "department_name": "Computer Science and Engineering",
+        "department_short": "Department of Universal logic",
+        "domain": "Artificial Intelligence & Computer Vision",
+        "pincode": "999999",
+        "project_subtitle": "An AI-powered approach to urban traffic management",
+        "project_title": "Autonomous Traffic Surveillance System using YOLOv8",
+        "project_type": "Major Project",
+        "semester": "VIII"
+    },
+    "people": {
+        "approvers": {
+            "COE": {
+                "name": "Mr. Alahumad"
+            },
+            "dean": {
+                "designation": "Dean",
+                "name": "Dr. Mohammad",
+                "school": "School of CSE"
+            },
+            "hod": {
+                "department": "ECE Department",
+                "designation": "Professor & Head",
+                "name": "Dr. Rekha Poral"
+            },
+            "principal": {
+                "designation": "Principal",
+                "name": "Dr. Alil Ahammed"
+            }
+        },
+        "guide": [
+            {
+                "department": "Department of CSE",
+                "designation": "Associate Professor",
+                "name": "Dr. Sarah Connor",
+                "role": "Internal Guide"
+            }
+        ],
+        "students": [
+            {
+                "name": "Alice Johnson",
+                "usn": "1MJ21CS001"
+            },
+            {
+                "name": "Bob Smith",
+                "usn": "1MJ21CS002"
+            },
+            {
+                "name": "Charlie Brown",
+                "usn": "1MJ21CS003"
+            },
+            {
+                "name": "Diana Ross",
+                "usn": "1MJ21CS004"
+            }
+        ]
+    },
+    "report_content": {
+        "abstract": {
+            "text": "This study investigates..."
+        },
+        "acknowledgement": {
+            "standard_text": "We are thankful to {principal_name}, Principal of {college_name} for his encouragement..."
+        },
+        "chapters": [],
+        "declaration": {
+            "text": "We, students of {semester} semester B.E., Department of {department_name}, {college_name}, hereby declare that..."
+        },
+        "references": []
+    },
+    "styles": {
+        "guide_label": 14,
+        "guide_name": 14,
+        "header_footer": 10,
+        "project_subtitle": 14,
+        "project_title": 16,
+        "student_details": 14
+    },
+    "submission_info": {
+        "academic_year_range": "2028-30",
+        "date": "[DATE]",
+        "place": "BANGALORE"
+    },
+    "session_id": "a29aa134-0f76-4736-a7cc-36c231deeaf9"
+}

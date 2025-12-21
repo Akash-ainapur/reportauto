@@ -16,12 +16,20 @@ class DeclarationGenerator(BaseSectionGenerator):
         meta = self.meta
         students = self.data["people"]["students"]
         
-        def get_stud_name(idx): return students[idx]["name"] if idx < len(students) else f"Student {idx+1}"
-        def get_stud_usn(idx): return students[idx]["usn"] if idx < len(students) else f"USN {idx+1}"
+        # Safely get student data even if dict keys are missing
+        def get_stud_name(idx): 
+            if idx < len(students):
+                return students[idx].get("name", f"Student {idx+1}")
+            return f"Student {idx+1}"
+
+        def get_stud_usn(idx): 
+            if idx < len(students):
+                return students[idx].get("usn", f"USN {idx+1}")
+            return f"USN {idx+1}"
 
         replacements = [
-            ("MVJ COLLEGE OF ENGINEERING", meta["college_name"], False, True, 18, None),
-            ("DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING", meta["department_name"], False, True, 14, None),
+            ("MVJ COLLEGE OF ENGINEERING", meta.get("college_name", "MVJ COLLEGE OF ENGINEERING"), False, True, 18, None),
+            ("DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING", meta.get("department_name", "DEPARTMENT OF COMPUTER SCIENCE"), False, True, 14, None),
             
              # Specific match for Body Text (Dept + College combo)
             (r"Computer science and Engineering\s*,?\s*MVJ College of Engineering", meta.get("course_name", "Electronics and Communication Engineering"), True, False, None, None),
@@ -29,8 +37,8 @@ class DeclarationGenerator(BaseSectionGenerator):
              # General match for Dept Name
             ("Computer science and Engineering", meta.get("course_name", "Electronics and Communication Engineering"), False, False, None, None),
             
-            (r"Sixth", meta["semester"], True, False, None, None),
-            (r"Major", meta["project_type"], True, False, None, None),
+            (r"Sixth", meta.get("semester", "Sixth"), True, False, None, None),
+            (r"Major", meta.get("project_type", "Major"), True, False, None, None),
             ("ARUNPRAKASH PATTAR", get_stud_name(0), False, False, None, None),
             ("HEMANTH S SAVANTH",  get_stud_name(1), False, False, None, None),
             ("CHINMAHESH C",       get_stud_name(2), False, False, None, None),
@@ -39,13 +47,13 @@ class DeclarationGenerator(BaseSectionGenerator):
             ("1MJ23CS411", get_stud_usn(1), False, False, None, None),
             ("1MJ23CS406", get_stud_usn(2), False, False, None, None),
             ("1MJ22CS029", get_stud_usn(3), False, False, None, None),
-            ("2024-2025", meta["academic_year"], False, False, None, None),
-            ("2024 - 2025", meta["academic_year"], False, False, None, None),
+            ("2024-2025", meta.get("academic_year", "2024-2025"), False, False, None, None),
+            ("2024 - 2025", meta.get("academic_year", "2024-2025"), False, False, None, None),
              ("Computer science and Engineering", meta.get("course_name", "Electronics and Communication Engineering"), False, False, None, None),
             (r"[\"“]?\s*MVJ\s*NEXTGEN\s*EDUCLOUD[:\s-]+AI[:\s-]+BASED\s*ACADEMIC\s*RESOURCE\s*MANAGER\s*[\"”]?", 
              [
                  {"text": "“", "bold": True, "color": None},
-                 {"text": meta["project_title"], "bold": True, "color": RGBColor(255, 0, 0)},
+                 {"text": meta.get("project_title", "PROJECT TITLE"), "bold": True, "color": RGBColor(255, 0, 0)},
                  {"text": "”", "bold": True, "color": None},
              ], 
              True, True, None, RGBColor(255, 0, 0)),

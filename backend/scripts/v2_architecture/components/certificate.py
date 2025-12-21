@@ -19,14 +19,14 @@ class CertificateGenerator(BaseSectionGenerator):
 
         # Styled Replacements
         styled_replacements = [
-            ("MVJ COLLEGE OF ENGINEERING", meta["college_name"], False, True, 18, None),
-            ("DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING", meta["department_name"].upper(), False, True, 14, None),
+            ("MVJ COLLEGE OF ENGINEERING", meta.get("college_name", "MVJ COLLEGE OF ENGINEERING"), False, True, 18, None),
+            ("DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING", meta.get("department_name", "DEPARTMENT OF COMPUTER SCIENCE").upper(), False, True, 14, None),
             ("Computer science and Engineering", meta.get("course_name", "Electronics and Communication Engineering"), False, False, None, None),
-            (r"Major", meta["project_type"], True, False, None, None),
-            ("2024 - 2025", meta["academic_year"], False, False, None, None),
-            ("Near ITPB, Whitefield, Bangalore – 560067", meta["college_address"], False, False, None, None),
+            (r"Major", meta.get("project_type", "Major"), True, False, None, None),
+            ("2024 - 2025", meta.get("academic_year", "2024-2025"), False, False, None, None),
+            ("Near ITPB, Whitefield, Bangalore – 560067", meta.get("college_address", "Near ITPB, Whitefield, Bangalore – 560067"), False, False, None, None),
             (r"[\"“]?\s*MVJ\s*NEXTGEN\s*EDUCLOUD[:\s-]+AI[:\s-]+BASED\s*ACADEMIC\s*RESOURCE\s*MANAGER\s*[\"”]?", 
-             f'"{meta["project_title"]}"', True, True, None, RGBColor(255, 0, 0))
+             f'"{meta.get("project_title", "PROJECT TITLE")}"', True, True, None, RGBColor(255, 0, 0))
         ]
 
         for p in doc.paragraphs:
@@ -57,9 +57,9 @@ class CertificateGenerator(BaseSectionGenerator):
 
         if signature_row:
             items = [
-                ("Signature of Guide", clean_text(cert["guide_name"]), clean_text(cert["guide_designation"])),
-                ("Signature of HOD",   clean_text(cert["hod_name"]),   clean_text(cert["hod_designation"])),
-                ("Signature of Dean",  clean_text(cert["dean_name"]),  clean_text(cert["dean_designation"]))
+                ("Signature of Guide", clean_text(cert.get("guide_name", "[GUIDE NAME]")), clean_text(cert.get("guide_designation", "[DESIGNATION]"))),
+                ("Signature of HOD",   clean_text(cert.get("hod_name", "[HOD NAME]")),   clean_text(cert.get("hod_designation", "[DESIGNATION]"))),
+                ("Signature of Dean",  clean_text(cert.get("dean_name", "[DEAN NAME]")),  clean_text(cert.get("dean_designation", "[DESIGNATION]")))
             ]
             for col_idx, (header, name, designation) in enumerate(items):
                 if col_idx >= len(signature_row.cells): break

@@ -1,0 +1,2 @@
+PROMPT: Write a one-sentence requirement for a report generator.
+RESPONSE: The report generator must allow users to define custom report layouts and data sources.
