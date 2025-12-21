@@ -5,3 +5,4 @@ google-generativeai>=0.7.0
 python-dotenv==1.0.0
 gunicorn==21.2.0
 docxcompose==1.4.0
+clerk-backend-api
