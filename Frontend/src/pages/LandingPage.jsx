@@ -5,6 +5,13 @@ import Footer from "../components/Footer";
 import { ArrowRight } from "lucide-react";
 import { SignInButton, SignedIn, SignedOut } from "@clerk/clerk-react";
 
+
+
+// Asset Imports for Production
+import retroMonitor from "../assets/retro_monitor.png";
+import starburst from "../assets/starburst_new.png";
+import squiggles from "../assets/hero_squiggles.png";
+
 const LandingPage = () => {
     return (
         <div className="min-h-screen pt-24 pb-0 flex flex-col bg-transparent relative overflow-x-hidden text-left">
@@ -80,13 +87,13 @@ const LandingPage = () => {
                                 transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
                                 className="absolute -top-12 -left-12 z-30 w-32 md:w-48 transform -rotate-12"
                             >
-                                <img src="/src/assets/starburst_new.png" alt="NEW!" className="w-full drop-shadow-[5px_5px_0_rgba(0,0,0,1)]" onError={(e) => e.target.style.display = 'none'} />
+                                <img src={starburst} alt="NEW!" className="w-full drop-shadow-[5px_5px_0_rgba(0,0,0,1)]" onError={(e) => e.target.style.display = 'none'} />
                             </motion.div>
 
                             {/* Main Monitor Image */}
                             <div className="relative z-10 w-full transform hover:scale-105 transition-transform duration-500 ease-out">
                                 <img
-                                    src="/src/assets/retro_monitor.png"
+                                    src={retroMonitor}
                                     alt="Retro Monitor"
                                     className="w-full h-auto object-contain drop-shadow-[16px_16px_0_rgba(0,0,0,1)]"
                                     onError={(e) => {
@@ -98,7 +105,7 @@ const LandingPage = () => {
 
                             {/* Decor: Squiggles */}
                             <img
-                                src="/src/assets/hero_squiggles.png"
+                                src={squiggles}
                                 alt=""
                                 className="absolute -z-10 -right-16 top-1/2 transform -translate-y-1/2 w-40 md:w-80 pointer-events-none opacity-90"
                                 onError={(e) => e.target.style.display = 'none'}
