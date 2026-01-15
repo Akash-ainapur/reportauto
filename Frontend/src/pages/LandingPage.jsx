@@ -56,15 +56,15 @@ const LandingPage = () => {
                         >
                             <SignedOut>
                                 <SignInButton mode="modal">
-                                    <button className="text-3xl md:text-5xl font-black bg-[#F4D73B] text-black px-8 py-4 border-4 border-black shadow-[8px_8px_0px_0px_#000000] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all flex items-center gap-4 uppercase font-heading">
-                                        Start Now <ArrowRight className="w-10 h-10 border-2 border-black rounded-full p-1" />
+                                    <button className="w-full md:w-auto text-xl md:text-5xl font-black bg-[#F4D73B] text-black px-6 py-3 md:px-8 md:py-4 border-4 border-black shadow-[8px_8px_0px_0px_#000000] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all flex items-center justify-center gap-4 uppercase font-heading">
+                                        Start Now <ArrowRight className="w-8 h-8 md:w-10 md:h-10 border-2 border-black rounded-full p-1" />
                                     </button>
                                 </SignInButton>
                             </SignedOut>
                             <SignedIn>
                                 <Link to="/generate">
-                                    <button className="text-3xl md:text-5xl font-black bg-[#F4D73B] text-black px-8 py-4 border-4 border-black shadow-[8px_8px_0px_0px_#000000] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all flex items-center gap-4 uppercase font-heading">
-                                        Start Now <ArrowRight className="w-10 h-10 border-2 border-black rounded-full p-1" />
+                                    <button className="w-full md:w-auto text-xl md:text-5xl font-black bg-[#F4D73B] text-black px-6 py-3 md:px-8 md:py-4 border-4 border-black shadow-[8px_8px_0px_0px_#000000] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all flex items-center justify-center gap-4 uppercase font-heading">
+                                        Start Now <ArrowRight className="w-8 h-8 md:w-10 md:h-10 border-2 border-black rounded-full p-1" />
                                     </button>
                                 </Link>
                             </SignedIn>
