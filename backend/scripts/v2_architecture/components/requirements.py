@@ -21,11 +21,8 @@ class RequirementsGenerator(AIContentBase):
         # Create fresh document
         doc = Document()
         
-        # Add "CHAPTER 6"
-        self.add_chapter_number(doc, 6)
-        
-        # Add "HARDWARE AND SOFTWARE REQUIREMENTS" as Heading 1
-        self.add_heading(doc, "HARDWARE AND SOFTWARE REQUIREMENTS", level=1)
+        # Add "CHAPTER 6: HARDWARE AND SOFTWARE REQUIREMENTS" as Heading 1
+        self.add_heading(doc, "CHAPTER 6: HARDWARE AND SOFTWARE REQUIREMENTS", level=1)
         
         # Add spacing
         doc.add_paragraph()

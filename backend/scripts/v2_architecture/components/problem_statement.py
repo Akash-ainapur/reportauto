@@ -21,11 +21,8 @@ class ProblemStatementGenerator(AIContentBase):
         # Create fresh document
         doc = Document()
         
-        # Add "CHAPTER 3"
-        self.add_chapter_number(doc, 3)
-        
-        # Add "PROBLEM STATEMENT" as Heading 1
-        self.add_heading(doc, "PROBLEM STATEMENT", level=1)
+        # Add "CHAPTER 3: PROBLEM STATEMENT" as Heading 1
+        self.add_heading(doc, "CHAPTER 3: PROBLEM STATEMENT", level=1)
         
         # Add spacing
         doc.add_paragraph()

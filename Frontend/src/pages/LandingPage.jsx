@@ -2,67 +2,135 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { Sparkles, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { SignInButton, SignedIn, SignedOut } from "@clerk/clerk-react";
 
 const LandingPage = () => {
     return (
-        <div className="min-h-screen pt-24 pb-0 px-4 flex flex-col bg-background">
+        <div className="min-h-screen pt-24 pb-0 flex flex-col bg-transparent relative overflow-x-hidden text-left">
             <Navbar />
 
-            <div className="flex-grow flex items-center justify-center">
-                {/* Hero Section */}
-                <div className="max-w-4xl mx-auto text-center space-y-12 mb-20">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8 }}
-                    >
-                        <h1 className="text-4xl md:text-6xl font-extrabold pb-4 bg-clip-text text-transparent bg-gradient-to-r from-white via-purple-200 to-purple-400 leading-tight">
-                            The Report Tool Your Future Self <br /> Will Thank You For.
-                        </h1>
-                    </motion.div>
+            {/* Main Content Area */}
+            <div className="flex-grow flex items-center justify-center relative z-10 px-4 md:px-12 py-12">
+                <div className="max-w-7xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
 
-                    <motion.p
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.3 }}
-                        className="text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto leading-relaxed"
-                    >
-                        Auto-generate Major & Mini Project reports that tick <span className="text-white font-semibold">every MVJ checkbox</span>. More time for the group chat, less time cursing at page margins.
-                    </motion.p>
+                    {/* Left Column: Text & CTA */}
+                    <div className="space-y-6 relative">
+                        {/* Headline */}
+                        <motion.h1
+                            initial={{ opacity: 0, y: 50 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="text-5xl md:text-7xl font-black text-black leading-[0.9] uppercase tracking-tighter"
+                        >
+                            Report<br />
+                            Generator For<br />
+                            Procrastinators.
+                        </motion.h1>
 
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.5 }}
-                        className="pt-8 flex justify-center"
-                    >
-                        <SignedOut>
-                            <SignInButton mode="modal">
-                                <button className="group relative px-8 py-4 bg-white text-black text-lg font-bold rounded-full overflow-hidden transition-all hover:scale-105 hover:shadow-[0_0_40px_rgba(255,255,255,0.5)]">
-                                    <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-pink-400 opacity-0 group-hover:opacity-20 transition-opacity" />
-                                    <span className="flex items-center gap-2">
-                                        Get Started <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                                    </span>
-                                </button>
-                            </SignInButton>
-                        </SignedOut>
+                        {/* Description Box */}
+                        <motion.div
+                            initial={{ opacity: 0, x: -50 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.2 }}
+                            className="neo-box p-6 bg-white relative max-w-lg z-20"
+                        >
+                            <p className="text-black font-mono text-lg md:text-xl font-bold leading-tight">
+                                Auto-generate Major & Mini Project reports that tick every MVJ checkbox. <br />
+                                100% formatted. 0% headache.
+                            </p>
+                        </motion.div>
 
-                        <SignedIn>
-                            <Link to="/generate">
-                                <button className="group relative px-8 py-4 bg-gradient-to-r from-primary to-purple-600 text-white text-lg font-bold rounded-full overflow-hidden transition-all hover:scale-105 hover:shadow-[0_0_40px_rgba(168,85,247,0.5)]">
-                                    <span className="flex items-center gap-2">
-                                        Go to Dashboard <Sparkles className="w-5 h-5 animate-pulse" />
-                                    </span>
-                                </button>
-                            </Link>
-                        </SignedIn>
-                    </motion.div>
+                        {/* CTA Section */}
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: 0.4 }}
+                            className="pt-4"
+                        >
+                            <SignedOut>
+                                <SignInButton mode="modal">
+                                    <button className="text-3xl md:text-5xl font-black bg-[#F4D73B] text-black px-8 py-4 border-4 border-black shadow-[8px_8px_0px_0px_#000000] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all flex items-center gap-4 uppercase font-heading">
+                                        Start Now <ArrowRight className="w-10 h-10 border-2 border-black rounded-full p-1" />
+                                    </button>
+                                </SignInButton>
+                            </SignedOut>
+                            <SignedIn>
+                                <Link to="/generate">
+                                    <button className="text-3xl md:text-5xl font-black bg-[#F4D73B] text-black px-8 py-4 border-4 border-black shadow-[8px_8px_0px_0px_#000000] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all flex items-center gap-4 uppercase font-heading">
+                                        Start Now <ArrowRight className="w-10 h-10 border-2 border-black rounded-full p-1" />
+                                    </button>
+                                </Link>
+                            </SignedIn>
+                        </motion.div>
+                    </div>
+
+                    {/* Right Column: Retro Image - Professionally Balanced */}
+                    <div className="relative flex justify-center items-center w-full h-full p-6 md:p-0">
+                        {/* 
+                            Image Wrapper: 
+                            - constrained to max-w-lg (approx 512px) for perfect desktop sizing. 
+                            - w-full ensures it shrinks on mobile.
+                            - relative positioning ensures stickers stay attached to the image.
+                        */}
+                        <div className="relative w-full max-w-lg">
+
+                            {/* Starburst Sticker */}
+                            <motion.div
+                                animate={{ rotate: [0, 5, -5, 0] }}
+                                transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+                                className="absolute -top-12 -left-12 z-30 w-32 md:w-48 transform -rotate-12"
+                            >
+                                <img src="/src/assets/starburst_new.png" alt="NEW!" className="w-full drop-shadow-[5px_5px_0_rgba(0,0,0,1)]" onError={(e) => e.target.style.display = 'none'} />
+                            </motion.div>
+
+                            {/* Main Monitor Image */}
+                            <div className="relative z-10 w-full transform hover:scale-105 transition-transform duration-500 ease-out">
+                                <img
+                                    src="/src/assets/retro_monitor.png"
+                                    alt="Retro Monitor"
+                                    className="w-full h-auto object-contain drop-shadow-[16px_16px_0_rgba(0,0,0,1)]"
+                                    onError={(e) => {
+                                        e.target.style.display = 'none';
+                                        e.target.parentElement.innerHTML = '<div class="w-full aspect-[4/3] bg-white border-4 border-black shadow-neo flex items-center justify-center font-bold text-2xl">RETRO MONITOR IMAGE MISSING</div>';
+                                    }}
+                                />
+                            </div>
+
+                            {/* Decor: Squiggles */}
+                            <img
+                                src="/src/assets/hero_squiggles.png"
+                                alt=""
+                                className="absolute -z-10 -right-16 top-1/2 transform -translate-y-1/2 w-40 md:w-80 pointer-events-none opacity-90"
+                                onError={(e) => e.target.style.display = 'none'}
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <Footer />
+            {/* Scrolling Marquee Footer */}
+            <div className="fixed bottom-0 left-0 w-full bg-yellow-300 border-t-4 border-black py-3 z-50 overflow-hidden">
+                <div className="animate-marquee whitespace-nowrap flex gap-12 text-xl font-bold font-mono text-black uppercase tracking-wider">
+                    <span>*** Your HOD will love this ***</span>
+                    <span>*** No more alignment issues ***</span>
+                    <span>*** Format Verified ***</span>
+                    <span>*** Saved my weekend ***</span>
+                    <span>*** Your HOD will love this ***</span>
+                    <span>*** No more alignment issues ***</span>
+                    <span>*** Format Verified ***</span>
+                    <span>*** Saved my weekend ***</span>
+                </div>
+            </div>
+
+            <style jsx global>{`
+                @keyframes marquee {
+                    0% { transform: translateX(0); }
+                    100% { transform: translateX(-50%); }
+                }
+                .animate-marquee {
+                    animation: marquee 20s linear infinite;
+                }
+            `}</style>
         </div>
     );
 };

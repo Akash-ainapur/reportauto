@@ -2,6 +2,7 @@ from docx import Document
 from docx.shared import Pt
 from .base import BaseSectionGenerator
 import re
+from docx.enum.text import WD_ALIGN_PARAGRAPH
 
 class AcknowledgementGenerator(BaseSectionGenerator):
     NEEDS_BORDER = True
@@ -9,6 +10,23 @@ class AcknowledgementGenerator(BaseSectionGenerator):
     def generate(self) -> Document:
         input_path = self.context.get_template_path("Aknowledgement.docx")
         doc = Document(input_path)
+        
+        # Ensure ACKNOWLEDGEMENT is a Heading 1 for TOC indexing
+        # Find the title paragraph and set style
+        found_title = False
+        for p in doc.paragraphs:
+            if "ACKNOWLEDGEMENT" in p.text.upper():
+                p.text = "ACKNOWLEDGEMENT"
+                p.style = "Heading 1"
+                p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                found_title = True
+                break
+        
+        # If not found (unlikely), add it at the top
+        if not found_title:
+            new_p = doc.paragraphs[0].insert_paragraph_before("ACKNOWLEDGEMENT", style="Heading 1")
+            new_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            
         self._process_acknowledgement(doc)
         return doc
 

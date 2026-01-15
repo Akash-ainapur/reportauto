@@ -21,11 +21,8 @@ class LiteratureSurveyGenerator(AIContentBase):
         # Create fresh document
         doc = Document()
         
-        # Add "CHAPTER 2" (18pt, bold, left-aligned)
-        self.add_chapter_number(doc, 2)
-        
-        # Add "LITERATURE SURVEY" as Heading 1 (for TOC indexing)
-        self.add_heading(doc, "LITERATURE SURVEY", level=1)
+        # Add "CHAPTER 2: LITERATURE SURVEY" as Heading 1 (for TOC indexing)
+        self.add_heading(doc, "CHAPTER 2: LITERATURE SURVEY", level=1)
         
         # Add spacing
         doc.add_paragraph()

@@ -19,7 +19,7 @@ class TableOfContentsGenerator:
     1. User opens document and updates field (right-click → Update Field)
     2. pywin32 automation triggers update (optional, see builder.py)
     """
-    NEEDS_BORDER = False
+    NEEDS_BORDER = True
     
     def __init__(self, context):
         self.context = context
@@ -29,12 +29,9 @@ class TableOfContentsGenerator:
         # Create fresh document
         doc = Document()
         
-        # Add "TABLE OF CONTENTS" heading (centered)
-        heading = doc.add_paragraph("TABLE OF CONTENTS")
+        # Add "TABLE OF CONTENTS" heading (centered, Heading 1)
+        heading = doc.add_heading("TABLE OF CONTENTS", level=1)
         heading.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        heading_run = heading.runs[0]
-        heading_run.font.size = Pt(18)
-        heading_run.font.bold = True
         
         # Add spacing
         doc.add_paragraph()

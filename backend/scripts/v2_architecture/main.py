@@ -12,6 +12,7 @@ from components.declaration import DeclarationGenerator
 from components.abstract import AbstractGenerator
 from components.acknowledgement import AcknowledgementGenerator
 from components.table_of_contents import TableOfContentsGenerator
+from components.list_of_figures import ListOfFiguresGenerator
 from components.introduction import IntroductionGenerator
 from components.literature_survey import LiteratureSurveyGenerator
 from components.problem_statement import ProblemStatementGenerator
@@ -30,7 +31,7 @@ def main():
     parser.add_argument('--output', help='Path to output DOCX file')
     args = parser.parse_args()
 
-    print("🚀 Starting V2 Report Assembly (Single Object Workflow)...")
+    print("🚀 Starting V2 Report Assembly (Single Object Workflow)...", flush=True)
     
     # 1. Initialize Context
     project_root = os.path.dirname(os.path.dirname(os.path.dirname(current_dir)))
@@ -45,9 +46,10 @@ def main():
     builder.add_step(FrontPageGenerator)              # Section 0
     builder.add_step(CertificateGenerator)            # Section 1
     builder.add_step(DeclarationGenerator)            # Section 2
-    builder.add_step(AbstractGenerator)               # Section 3
-    builder.add_step(AcknowledgementGenerator)        # Section 4
+    builder.add_step(AcknowledgementGenerator)        # Section 3
+    builder.add_step(AbstractGenerator)               # Section 4
     builder.add_step(TableOfContentsGenerator)        # Section 5 - TOC
+    builder.add_step(ListOfFiguresGenerator)         # Section 6 - LOF
     builder.add_step(IntroductionGenerator)           # Section 6 - Chapter 1
     builder.add_step(LiteratureSurveyGenerator)       # Section 7 - Chapter 2
     builder.add_step(ProblemStatementGenerator)       # Section 8 - Chapter 3

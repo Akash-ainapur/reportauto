@@ -389,6 +389,58 @@ class PromptTemplates:
             raise ValueError(f"Missing required context variable: {e}")
     
     @staticmethod
+    def get_bulk_prompt(sections: list[str], context: Dict[str, Any]) -> str:
+        """
+        Build a single large prompt to generate multiple sections at once.
+        
+        Args:
+            sections: List of section names to generate
+            context: Global project context including ai_context
+            
+        Returns:
+            A combined prompt string with formatting instructions
+        """
+        combined_prompts = []
+        
+        # System instructions summary for the whole bundle
+        bulk_instruction = (
+            "You are a professional technical writer. Generate the following report sections "
+            "as per the specific instructions for each. \n\n"
+        )
+        
+        # Add User AI Context if provided
+        ai_context = context.get("ai_context", "").strip()
+        if ai_context:
+            bulk_instruction += (
+                "CRITICAL PROJECT CONTEXT TO USE FOR ALL SECTIONS:\n"
+                f"\"\"\"{ai_context}\"\"\"\n\n"
+                "Incorporate the specific details, tech stack, and logic from the context above "
+                "into the generated content below. If the context is brief, expand on it logically.\n\n"
+            )
+
+        bulk_instruction += (
+            "CRITICAL FORMATTING RULES:\n"
+            "- Enclose each section's content within XML-style tags like <section_name>...</section_name>.\n"
+            "- DO NOT include section titles (like 'ABSTRACT') inside the tags unless specified.\n"
+            "- Use markdown formatting (### for subheadings, **bold**, *italic*).\n\n"
+        )
+        
+        combined_prompts.append(bulk_instruction)
+        
+        for section in sections:
+            if section in PromptTemplates.PROMPTS:
+                _, individual_prompt = PromptTemplates.get_prompt(section, context)
+                section_prompt = (
+                    f"### SECTION: {section.upper()} ###\n"
+                    f"START GENERATING FOR TAG: <{section}>\n"
+                    f"{individual_prompt}\n"
+                    f"END GENERATING FOR TAG: </{section}>\n\n"
+                )
+                combined_prompts.append(section_prompt)
+        
+        return "\n".join(combined_prompts)
+
+    @staticmethod
     def get_word_limit(section_name: str) -> int:
         """Get the default word limit for a section."""
         if section_name not in PromptTemplates.PROMPTS:

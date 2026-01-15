@@ -9,19 +9,15 @@ class AbstractGenerator(AIContentBase):
     Generates the Abstract page with AI-powered content.
     Format: ABSTRACT heading (18pt bold, centered) followed by justified content.
     """
-    NEEDS_BORDER = False
+    NEEDS_BORDER = True
 
     def generate(self) -> Document:
         """Generate the abstract page with AI content."""
         # Create fresh document
         doc = Document()
         
-        # Add ABSTRACT title (18pt, bold, centered)
-        p = doc.add_paragraph()
-        run = p.add_run("ABSTRACT")
-        run.bold = True
-        run.font.size = Pt(18)
-        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        # Add ABSTRACT title (Heading 1 for TOC, centered)
+        self.add_heading(doc, "ABSTRACT", level=1, alignment=WD_ALIGN_PARAGRAPH.CENTER)
         
         # Add spacing
         doc.add_paragraph()

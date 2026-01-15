@@ -21,11 +21,8 @@ class ExistingProposedGenerator(AIContentBase):
         # Create fresh document
         doc = Document()
         
-        # Add "CHAPTER 4"
-        self.add_chapter_number(doc, 4)
-        
-        # Add "EXISTING AND PROPOSED SYSTEM" as Heading 1
-        self.add_heading(doc, "EXISTING AND PROPOSED SYSTEM", level=1)
+        # Add "CHAPTER 4: EXISTING AND PROPOSED SYSTEM" as Heading 1
+        self.add_heading(doc, "CHAPTER 4: EXISTING AND PROPOSED SYSTEM", level=1)
         
         # Add spacing
         doc.add_paragraph()

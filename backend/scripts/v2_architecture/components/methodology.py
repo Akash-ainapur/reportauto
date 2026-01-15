@@ -21,11 +21,8 @@ class MethodologyGenerator(AIContentBase):
         # Create fresh document
         doc = Document()
         
-        # Add "CHAPTER 5"
-        self.add_chapter_number(doc, 5)
-        
-        # Add "METHODOLOGY" as Heading 1
-        self.add_heading(doc, "METHODOLOGY", level=1)
+        # Add "CHAPTER 5: METHODOLOGY" as Heading 1
+        self.add_heading(doc, "CHAPTER 5: METHODOLOGY", level=1)
         
         # Add spacing
         doc.add_paragraph()

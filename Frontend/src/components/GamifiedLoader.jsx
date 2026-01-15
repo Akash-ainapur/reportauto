@@ -76,41 +76,45 @@ const GamifiedLoader = ({ progress = 0 }) => {
     }, []);
 
     return (
-        <div className="flex flex-col items-center justify-center p-8 text-center space-y-6 w-full max-w-md">
+        <div className="flex flex-col items-center justify-center p-8 text-center space-y-6 w-full max-w-md bg-white border-3 border-black shadow-neo">
             <div className="relative w-32 h-32 mb-4">
+                {/* Retro Spinner */}
                 <motion.div
                     animate={{ rotate: 360 }}
-                    transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-                    className="absolute inset-0 rounded-full border-4 border-transparent border-t-primary border-r-purple-500 blur-sm"
+                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                    className="absolute inset-0 rounded-none border-4 border-black border-t-primary border-r-black border-b-black border-l-black bg-transparent"
                 />
                 <motion.div
                     animate={{ rotate: -360 }}
-                    transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-                    className="absolute inset-2 rounded-full border-4 border-transparent border-b-cyan-500 border-l-blue-500 blur-sm"
+                    transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                    className="absolute inset-4 rounded-none border-4 border-black border-b-accent-teal bg-transparent"
                 />
-                <div className="absolute inset-0 flex items-center justify-center font-bold text-2xl text-white">
+                <div className="absolute inset-0 flex items-center justify-center font-heading text-3xl text-black font-bold">
                     {Math.round(progress)}%
                 </div>
             </div>
 
-            <div className="w-full bg-white/10 rounded-full h-2.5 mb-4 overflow-hidden">
+            <div className="w-full bg-gray-200 border-2 border-black h-6 rounded-none overflow-hidden relative">
                 <motion.div
-                    className="bg-gradient-to-r from-primary to-purple-500 h-2.5 rounded-full"
+                    className="bg-accent-purple h-full border-r-2 border-black"
                     initial={{ width: 0 }}
                     animate={{ width: `${progress}%` }}
                     transition={{ duration: 0.5 }}
                 />
+
+                {/* Striped overlay pattern */}
+                <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNCIgaGVpZ2h0PSI0IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xIDRoMVYwSDF6IiBmaWxsPSIjMDAwIiBmaWxsLW9wYWNpdHk9IjAuMSIvPjwvc3ZnPg==')] opacity-30 pointer-events-none" />
             </div>
 
-            <div className="h-16 overflow-hidden flex items-center justify-center">
+            <div className="h-20 flex items-center justify-center w-full border-2 border-dashed border-gray-400 bg-gray-50 p-2">
                 <AnimatePresence mode="wait">
                     <motion.p
                         key={index}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.3 }}
-                        className="text-lg text-purple-200 font-medium px-4"
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 1.1 }}
+                        transition={{ duration: 0.2 }}
+                        className="text-lg text-black font-mono font-bold px-4 uppercase"
                     >
                         "{loadingMessages[index]}"
                     </motion.p>

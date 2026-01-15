@@ -21,11 +21,8 @@ class IntroductionGenerator(AIContentBase):
         # Create fresh document
         doc = Document()
         
-        # Add "CHAPTER 1" (18pt, bold, left-aligned)
-        self.add_chapter_number(doc, 1)
-        
-        # Add "INTRODUCTION" as Heading 1 (for TOC indexing)
-        self.add_heading(doc, "INTRODUCTION", level=1)
+        # Add "CHAPTER 1: INTRODUCTION" as Heading 1 (for TOC indexing)
+        self.add_heading(doc, "CHAPTER 1: INTRODUCTION", level=1)
         
         # Add spacing
         doc.add_paragraph()

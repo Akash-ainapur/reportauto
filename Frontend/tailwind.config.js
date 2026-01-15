@@ -7,45 +7,35 @@ export default {
   theme: {
     extend: {
       colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
+        background: "#ffffff", // Use white as base, dots will be CSS
+        foreground: "#000000",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+          DEFAULT: "#F4D73B", // Primary Yellow
+          hover: "#EAC200", 
         },
         secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
-        },
-        destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
-        },
-        muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
+          DEFAULT: "#E6E1F9", // Lavender
         },
         accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
+          coral: "#F27870",
+          purple: "#635BFF",
+          teal: "#A7E8E0",
         },
-        popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
-        },
-        card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
-        },
+        retro: {
+          beige: "#E8E6D9",
+        }
       },
-      borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+      fontFamily: {
+        sans: ['"Roboto Mono"', 'monospace'], // Default body font
+        heading: ['"Oswald"', 'sans-serif'], // Heading font
       },
+      boxShadow: {
+        'neo': '4px 4px 0px 0px rgba(0,0,0,1)', // The hard shadow
+        'neo-lg': '8px 8px 0px 0px rgba(0,0,0,1)',
+      },
+      borderWidth: {
+        '3': '3px',
+      }
     },
   },
   plugins: [],

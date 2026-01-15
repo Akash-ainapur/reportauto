@@ -107,7 +107,7 @@ def run_report_generation(session_id, json_path, output_path):
 
             # Run with explicit input/output arguments
             process = subprocess.Popen(
-                [sys.executable, script_path, '--data', json_path, '--output', output_path],
+                [sys.executable, "-u", script_path, '--data', json_path, '--output', output_path],
                 cwd=PROJECT_ROOT,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
@@ -318,7 +318,7 @@ def generate_report():
     status_map[session_id] = {
         'running': True,
         'progress': 0,
-        'total_steps': 14,
+        'total_steps': 17,
         'current_step': 'Queued',
         'error': None,
         'last_updated': time.time(),
@@ -373,4 +373,6 @@ if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     # Threaded=True is default, which allows multiple requests. 
     # Our semaphore controls the heavy lifting.
-    app.run(host='0.0.0.0', port=port, debug=True)
+    # Validation: Turn off debug mode in 'production' usage to prevent
+    # auto-reloads from killing background generation threads.
+    app.run(host='0.0.0.0', port=port, debug=False)

@@ -11,7 +11,6 @@ import json
 import hashlib
 from pathlib import Path
 from dotenv import load_dotenv
-import google.generativeai as genai
 from typing import Optional, Dict, Any
 
 # Load environment variables from .env file in project root
@@ -40,6 +39,7 @@ class GeminiService:
         """Initialize the Gemini service. Runs only once due to singleton pattern."""
         if not GeminiService._initialized:
             self.api_key = os.getenv('GEMINI_API_KEY')
+            self.model_name = 'gemini-flash-lite-latest'
             self.model = None
             self.is_configured = False
             self.cache_file = project_root / 'backend' / 'data' / 'ai_cache.json'
@@ -82,8 +82,9 @@ class GeminiService:
             return
         
         try:
+            import google.generativeai as genai
             genai.configure(api_key=self.api_key)
-            self.model = genai.GenerativeModel('gemini-flash-lite-latest')
+            self.model = genai.GenerativeModel(self.model_name)
             self.is_configured = True
             print("✅ Gemini API configured successfully")
         except Exception as e:
@@ -123,15 +124,17 @@ class GeminiService:
         
         for attempt in range(max_retries):
             try:
+                import google.generativeai as genai
                 # Create model with system instruction if provided
                 if system_instruction:
                     model = genai.GenerativeModel(
-                        'gemini-flash-lite-latest',
+                        self.model_name,
                         system_instruction=system_instruction
                     )
                 else:
                     model = self.model
                 
+                import google.generativeai as genai
                 # Configure generation parameters
                 generation_config = genai.types.GenerationConfig(
                     temperature=temperature,
@@ -154,8 +157,9 @@ class GeminiService:
                     print("💾 Cached AI response for future use")
                 
                 # Rate Limiting: Sleep to prevent hitting RPM limits
-                print("⏳ Rate Limiting: Waiting 5s...")
-                time.sleep(5)
+                # Reduced from 5s to 1s as we only make 2 requests now
+                print("⏳ Rate Limiting: Waiting 1s...")
+                time.sleep(1)
                 
                 return content
                 
@@ -171,6 +175,24 @@ class GeminiService:
         
         return self._get_fallback_content(prompt)
     
+    def generate_bulk_content(
+        self,
+        prompt: str,
+        temperature: float = 0.5,
+        use_cache: bool = True
+    ) -> str:
+        """
+        Generate content for multiple sections in one request.
+        Uses a lower temperature for more predictable formatting.
+        """
+        # Bulk generation is inherently more complex, so we use a lower temperature
+        return self.generate_content(
+            prompt=prompt,
+            system_instruction="You are a meticulous technical writer who follows tagging instructions perfectly.",
+            temperature=temperature,
+            use_cache=use_cache
+        )
+
     def _get_fallback_content(self, prompt: str) -> str:
         """
         Generate fallback placeholder content when AI service is unavailable.

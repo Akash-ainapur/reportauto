@@ -121,7 +121,7 @@ class AIContentBase(BaseSectionGenerator):
         tab_stops.add_tab_stop(Inches(3.25), WD_ALIGN_PARAGRAPH.CENTER)
         tab_stops.add_tab_stop(Inches(6.5), WD_ALIGN_PARAGRAPH.RIGHT)
     
-    def add_heading(self, doc: Document, text: str, level: int = 1) -> None:
+    def add_heading(self, doc: Document, text: str, level: int = 1, alignment: int = None) -> None:
         """
         Add a heading with the correct style for indexing.
         
@@ -129,12 +129,16 @@ class AIContentBase(BaseSectionGenerator):
             doc: Document object
             text: Heading text
             level: Heading level (1 for H1, 2 for H2, 3 for H3)
+            alignment: Optional alignment (WD_ALIGN_PARAGRAPH enum)
         """
         heading_style = f"Heading {level}"
         heading = doc.add_heading(text, level=level)
         # Ensure uppercase for main headings (level 1)
         if level == 1:
             heading.text = text.upper()
+        
+        if alignment is not None:
+            heading.alignment = alignment
         
         # Apply 1.5 line spacing to all headings
         heading.paragraph_format.line_spacing = 1.5
@@ -224,15 +228,19 @@ class AIContentBase(BaseSectionGenerator):
     def generate_ai_content(self, section_name: str) -> str:
         """
         Generate AI content for a specific section.
-        
-        Args:
-            section_name: Name of the section (e.g., 'abstract', 'introduction')
-            
-        Returns:
-            Generated content text
+        Prioritizes content from bulk generation if available.
         """
-        # Check if AI generation is enabled globally
-        if not self.ai_config.get("enabled", False):
+        # 1. Check if content was already generated in bulk
+        if section_name in self.context.bulk_content:
+            print(f"🚀 Using pre-generated bulk content for: {section_name}")
+            return self.context.bulk_content[section_name]
+
+        # 2. Fallback to individual AI generation (existing logic)
+        ai_context = self.data.get("ai_context", "").strip()
+        
+        # Check if AI generation is enabled globally or auto-enable if ai_context is present
+        ai_enabled = self.ai_config.get("enabled", False) or len(ai_context) > 10
+        if not ai_enabled:
             return self._get_manual_content(section_name)
         
         # Check if AI generation is enabled for this specific section

@@ -21,8 +21,8 @@ class ConclusionGenerator(AIContentBase):
         # Create fresh document
         doc = Document()
         
-        # Add "CONCLUSION" as Heading 1 (no chapter number)
-        self.add_heading(doc, "CONCLUSION", level=1)
+        # Add "CHAPTER 7: CONCLUSION" as Heading 1
+        self.add_heading(doc, "CHAPTER 7: CONCLUSION", level=1)
         
         # Add spacing
         doc.add_paragraph()

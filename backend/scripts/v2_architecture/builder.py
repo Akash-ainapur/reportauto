@@ -15,8 +15,20 @@ class ReportContext:
         self.templates_dir = os.path.join(project_root, "backend", "templates", "template_indivisual")
         self.data_file = data_file
         self.data = self._load_data()
+        self.bulk_content = {}  # Stores extracted AI content mapped by section name
         
         os.makedirs(self.output_dir, exist_ok=True)
+
+    def extract_bulk_content(self, raw_response: str):
+        """Extract multi-section content from AI response using tags."""
+        import re
+        # Pattern to match <section_name>...</section_name>
+        pattern = r'<(\w+)>(.*?)</\1>'
+        matches = re.findall(pattern, raw_response, re.DOTALL)
+        
+        for section_name, content in matches:
+            self.bulk_content[section_name.strip()] = content.strip()
+            print(f"📥 Extracted bulk content for: {section_name}")
 
     def _load_data(self):
         # Use provided data path or fallback to default
@@ -26,7 +38,17 @@ class ReportContext:
             json_path = os.path.join(self.project_root, "backend", "data", "full_report_template.json")
             
         with open(json_path, 'r', encoding='utf-8') as f:
-            return json.load(f)
+            data = json.load(f)
+            
+        # Post-processing: Enforce capitalization for key academic fields
+        if "global_metadata" in data:
+            meta = data["global_metadata"]
+            if "project_title" in meta:
+                meta["project_title"] = meta["project_title"].upper()
+            if "department_name" in meta:
+                meta["department_name"] = meta["department_name"].upper()
+                
+        return data
 
     def get_template_path(self, filename):
         return os.path.join(self.templates_dir, filename)
@@ -45,8 +67,11 @@ class ReportBuilder:
     def build(self):
         print("🏗 Starting Build Process...")
         
+        # Pre-process: Trigger bulk AI requests to minimize API calls
+        self._perform_bulk_ai_generation()
+        
         for i, StepClass in enumerate(self.steps):
-            print(f"  -> Executing Step: {StepClass.__name__}")
+            print(f"  -> Executing Step: {StepClass.__name__}", flush=True)
             generator = StepClass(self.context)
             doc = generator.generate()
             
@@ -213,8 +238,8 @@ class ReportBuilder:
                 print(f"     Section {section_idx}: Isolated (no header/footer)")
                 continue
             
-            elif 3 <= section_idx <= 5:
-                # Abstract, Acknowledgement, TOC: Simple centered footer only
+            elif 3 <= section_idx <= 6:
+                # Ack, Abstract, TOC, LOF: Simple centered footer only
                 section.different_first_page_header_footer = False
                 
                 # Remove page number restart
@@ -304,13 +329,13 @@ class ReportBuilder:
             if section_idx <= 2:
                 # Front Page, Certificate, Declaration: hidden
                 pass
-            elif 3 <= section_idx <= 5:
-                # Abstract, Acknowledgement, TOC: Roman (i, ii, iii)
+            elif 3 <= section_idx <= 6:
+                # Ack, Abstract, TOC, LOF: Roman (i, ii, iii, iv)
                 pgNumType.set(qn('w:fmt'), 'lowerRoman')
                 if section_idx == 3:
                     pgNumType.set(qn('w:start'), '1')
                 sectPr.append(pgNumType)
-            elif section_idx == 6:
+            elif section_idx == 7:
                 # Introduction: RESTART at 1 with Arabic
                 pgNumType.set(qn('w:fmt'), 'decimal')
                 pgNumType.set(qn('w:start'), '1')
@@ -358,6 +383,63 @@ class ReportBuilder:
                 print("     ✅ TOC field inserted")
                 break
     
+    def _perform_bulk_ai_generation(self):
+        """Execute bulk AI requests to minimize API calls."""
+        from services.gemini_service import GeminiService
+        from services.prompt_templates import PromptTemplates
+        
+        # Check if AI is enabled globally or if ai_context is provided
+        ai_config = self.context.data.get("ai_content_config", {})
+        ai_context = self.context.data.get("ai_context", "").strip()
+        
+        # Auto-enable AI if ai_context is present (Frontend integration)
+        ai_enabled = ai_config.get("enabled", False) or len(ai_context) > 10
+        
+        if not ai_enabled:
+            print("⏭ AI content generation disabled. Skipping bulk requests.")
+            return
+
+        print("🤖 Triggering Bulk AI Content Generation...")
+        ai_service = GeminiService()
+        
+        # Define groups
+        groups = self._get_bulk_groups()
+        
+        # Prepare context for prompt template
+        global_meta = self.context.data.get("global_metadata", {})
+        prompt_context = {
+            "project_title": global_meta.get("project_title", "Untitled Project"),
+            "project_type": global_meta.get("project_type", "engineering"),
+            "domain": global_meta.get("domain", "technology"),
+            "ai_context": ai_context
+        }
+        
+        for i, group in enumerate(groups):
+            print(f"  -> Executing Step: BulkAIGeneration_{i+1}", flush=True) # Caught by app.py for progress
+            print(f"   Request {i+1}/{len(groups)}: Generating {', '.join(group)}...", flush=True)
+            
+            # 1. Build combined prompt with ai_context
+            bulk_prompt = PromptTemplates.get_bulk_prompt(group, prompt_context)
+            
+            # 2. Get AI response
+            raw_response = ai_service.generate_bulk_content(bulk_prompt)
+            
+            # 3. Extract and store individual sections
+            self.context.extract_bulk_content(raw_response)
+            
+        print("✅ Bulk AI generation completed.")
+
+    def _get_bulk_groups(self):
+        """
+        Define which sections should be batched together.
+        Optimized to reduce 9 calls down to just 2 for Gemini 3 Flash.
+        """
+        return [
+            ["abstract", "introduction", "literature_survey", "problem_statement"],
+            ["existing_proposed", "methodology"],
+            ["requirements", "conclusion", "references"]
+        ]
+
     def _auto_update_toc_with_word(self, output_path):
         """
         OPTIONAL: Use pywin32 to open document in Word and update TOC field.
