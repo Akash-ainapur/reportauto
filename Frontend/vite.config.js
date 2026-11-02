@@ -7,6 +7,8 @@ export default defineConfig({
     react(),
   ],
   server: {
+    // The form reads backend/data/departments_context.json, one folder above the frontend
+    fs: { allow: ['..'] },
     proxy: {
       '/api': {
         target: 'http://127.0.0.1:5000', // Reverted to Local Backend

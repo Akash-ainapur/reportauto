@@ -1,0 +1,141 @@
+{
+  "__comment": "Sample input for a full Major Project Phase II run (dummy students; hazard-waste project from the reference report)",
+  "ai_content_config": {
+    "enabled": true,
+    "model": "gemini-1.5-flash-8b",
+    "sections": {
+      "abstract": {
+        "custom_prompt": null,
+        "generate": true,
+        "word_limit": 250
+      },
+      "conclusion": {
+        "custom_prompt": null,
+        "generate": true,
+        "word_limit": 400
+      },
+      "existing_proposed": {
+        "custom_prompt": null,
+        "generate": true,
+        "word_limit": 800
+      },
+      "introduction": {
+        "custom_prompt": null,
+        "generate": true,
+        "word_limit": 800
+      },
+      "literature_survey": {
+        "custom_prompt": null,
+        "generate": true,
+        "word_limit": 2000
+      },
+      "methodology": {
+        "custom_prompt": null,
+        "generate": true,
+        "word_limit": 1000
+      },
+      "problem_statement": {
+        "custom_prompt": null,
+        "generate": true,
+        "word_limit": 500
+      },
+      "references": {
+        "custom_prompt": null,
+        "generate": true,
+        "word_limit": 600
+      },
+      "requirements": {
+        "custom_prompt": null,
+        "generate": true,
+        "word_limit": 400
+      }
+    },
+    "temperature": 0.7
+  },
+  "certificate_info": {
+    "certificate_title": "CERTIFICATE",
+    "dean_designation": "Dean, School of CSE\nMVJCE",
+    "dean_name": "Dr. Test Dean",
+    "guide_designation": "Assistant Professor\nDepartment of Universal Logic",
+    "guide_name": "Mrs. Test Guide",
+    "hod_designation": "Associate Professor",
+    "hod_name": "Dr. Test HOD",
+    "project_type": "Major Project"
+  },
+  "global_metadata": {
+    "academic_year": "2026-27",
+    "city_code": "Bangalore - 67",
+    "college_address": "Affiliated to VTU, Belagavi, Approved by AICTE, New Delhi Recognized by UGC with 12(f) & 12(b), Accredited by NBA & NACC",
+    "college_name": "MVJ College of Engineering, Bengaluru (An Autonomous Institute)",
+    "course_name": "Electronics and Communication Engineering ",
+    "department_abbr": "CSE",
+    "department_name": "Computer Science and Engineering",
+    "department_short": "Department of Universal logic",
+    "domain": "AI, IoT and Robotics",
+    "pincode": "999999",
+    "project_subtitle": "",
+    "project_title": "Hazard Waste Detection Using AI and IoT",
+    "project_type": "Major",
+    "semester": "VIII"
+  },
+  "people": {
+    "students": [
+      {
+        "name": "Test Student One",
+        "usn": "1MJ22CS001"
+      },
+      {
+        "name": "Test Student Two",
+        "usn": "1MJ22CS002"
+      },
+      {
+        "name": "Test Student Three",
+        "usn": "1MJ22CS003"
+      }
+    ],
+    "guide": [
+      {
+        "name": "Mrs. Test Guide",
+        "designation": "Assistant Professor",
+        "department": "Department of CSE"
+      }
+    ],
+    "approvers": {
+      "COE": {
+        "name": "Dr. Test Controller"
+      },
+      "dean": {
+        "designation": "Dean",
+        "name": "Dr. Mohammad",
+        "school": "School of CSE"
+      },
+      "hod": {
+        "department": "ECE Department",
+        "designation": "Professor & Head",
+        "name": "Dr. Rekha Poral"
+      },
+      "principal": {
+        "designation": "Principal",
+        "name": "Dr. Test Principal"
+      }
+    }
+  },
+  "report_content": {},
+  "styles": {
+    "guide_label": 14,
+    "guide_name": 14,
+    "header_footer": 10,
+    "project_subtitle": 14,
+    "project_title": 16,
+    "student_details": 14
+  },
+  "submission_info": {
+    "academic_year_range": "2028-30",
+    "date": "[DATE]",
+    "place": "BANGALORE"
+  },
+  "ai_context": "A mobile robot for hazardous waste detection. ESP32 (NodeMCU ESP32S) drives four 12V DC encoder motors through two L298N drivers, powered by a 12V Li-ion pack via an XT60 power distribution board. An ESP32-CAM streams live video; an ESP8266 NodeMCU controls a pan-tilt servo mount (SG90) and a 0.96in I2C OLED status display. A Flask server receives the stream, runs a custom-trained YOLOv11 model (Ultralytics, OpenCV) to detect hazards such as chemical containers, batteries, plastic waste, fire and gas leaks, and serves a web dashboard (HTML/CSS/JS) with gamepad-style movement controls, camera controls, live stream, status and server logs. Modules talk over UDP broadcast on Wi-Fi. Firmware written with PlatformIO (Arduino framework). Testing: unit tests per module (motor control, camera streaming, YOLO detection, UDP communication, power/voltage), integration testing; observed 1-2 s stream latency at high resolution. Limitations: only visually apparent hazards, Wi-Fi dependency, manual navigation, battery life, lighting sensitivity. Future: gas sensors, SLAM navigation, LoRa/4G, solar charging, edge inference, real-time alerts, mobile app. Papers: ChemiRover - Integrated IoT and ML for Hazardous Area Monitoring (Aayush Gadiya; Harsh Badagandi; Mayank Ahuja; Anil Kadu, 2024); Remote Monitoring of Hazardous Environment at Mining Sites Using LoRa Network (Asfar H. Siddiqui; Anup Ranade; Akshaykumar Meshram; Vinod Waiker, 2024); Garbage Classification using Machine Learning to Aid Recycling (Harsh Sanjay Pandita; Vidhi Vaidya; Mayur Doifode; Prasenjit Bhavthankar; Anantalakshmi Venkatesh, 2022).",
+  "custom_sections": null,
+  "report_type": "major_project_phase2",
+  "session_id": "manual-test"
+}

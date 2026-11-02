@@ -60,13 +60,13 @@
         "guide_name": "Prof. Albus Dumbledore",
         "hod_designation": "Assistant Professor\nDepartment of Universal Logic",
         "hod_name": "Dr. Dummy HOD",
-        "project_type": "kelsa illadha"
+        "project_type": "Major Project"
     },
     "global_metadata": {
-        "academic_year": "2026-89",
-        "city_code": "MARS COLONY - 001",
-        "college_address": "Near ITPB, Whitefield, Bangalore \u00e2\u20ac\u201c 560067",
-        "college_name": "MVJ COLLEGE OF ENGINEERING",
+        "academic_year": "2026-27",
+        "city_code": "Bengaluru",
+        "college_address": "Affiliated to VTU, Belagavi, Approved by AICTE, New Delhi Recognized by UGC with 12(f) & 12(b), Accredited by NBA & NACC",
+        "college_name": "MVJ College of Engineering, Bengaluru (An Autonomous Institute)",
         "course_name": "Electronics and Communication Engineering ",
         "department_abbr": "ALIBABA",
         "department_name": "DEPARTMENT OF KAKKA",
@@ -107,7 +107,7 @@
         ],
         "approvers": {
             "COE": {
-                "name": "Mr. Alahumad"
+                "name": "Dr. Kumar R"
             },
             "dean": {
                 "designation": "Dean",
@@ -121,7 +121,7 @@
             },
             "principal": {
                 "designation": "Principal",
-                "name": "Dr. Alil Ahammed"
+                "name": "Dr. Ajayan K R"
             }
         }
     },
@@ -150,5 +150,6 @@
         "academic_year_range": "2028-30",
         "date": "[DATE]",
         "place": "BANGALORE"
-    }
+    },
+    "report_type": "major_project_phase2"
 }

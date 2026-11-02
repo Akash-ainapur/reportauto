@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Roboto+Mono:wght@400;700&family=VT323&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -16,7 +18,11 @@
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
-    /* Polka Dot Pattern */
+  }
+}
+
+@layer utilities {
+  .bg-retro-dots {
     background-image: radial-gradient(#000 2px, transparent 2px);
     background-size: 24px 24px;
     background-color: #ffffff;

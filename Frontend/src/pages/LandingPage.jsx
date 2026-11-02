@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { ArrowRight } from "lucide-react";
-import { SignInButton, SignedIn, SignedOut } from "@clerk/clerk-react";
 
 
 
@@ -42,7 +41,7 @@ const LandingPage = () => {
                             className="neo-box p-6 bg-white relative max-w-lg z-20"
                         >
                             <p className="text-black font-mono text-lg md:text-xl font-bold leading-tight">
-                                Auto-generate Major & Mini Project reports that tick every MVJ checkbox. <br />
+                                Your Major Project Phase II report in the department's format, written from your project details. <br />
                                 100% formatted. 0% headache.
                             </p>
                         </motion.div>
@@ -54,20 +53,12 @@ const LandingPage = () => {
                             transition={{ delay: 0.4 }}
                             className="pt-4"
                         >
-                            <SignedOut>
-                                <SignInButton mode="modal">
-                                    <button className="w-full md:w-auto text-xl md:text-5xl font-black bg-[#F4D73B] text-black px-6 py-3 md:px-8 md:py-4 border-4 border-black shadow-[8px_8px_0px_0px_#000000] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all flex items-center justify-center gap-4 uppercase font-heading">
-                                        Start Now <ArrowRight className="w-8 h-8 md:w-10 md:h-10 border-2 border-black rounded-full p-1" />
-                                    </button>
-                                </SignInButton>
-                            </SignedOut>
-                            <SignedIn>
-                                <Link to="/generate">
-                                    <button className="w-full md:w-auto text-xl md:text-5xl font-black bg-[#F4D73B] text-black px-6 py-3 md:px-8 md:py-4 border-4 border-black shadow-[8px_8px_0px_0px_#000000] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all flex items-center justify-center gap-4 uppercase font-heading">
-                                        Start Now <ArrowRight className="w-8 h-8 md:w-10 md:h-10 border-2 border-black rounded-full p-1" />
-                                    </button>
-                                </Link>
-                            </SignedIn>
+                            <Link to="/generate" className="w-full md:w-auto text-xl md:text-5xl font-black bg-[#F4D73B] text-black px-6 py-3 md:px-8 md:py-4 border-4 border-black shadow-[8px_8px_0px_0px_#000000] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all flex items-center justify-center gap-4 uppercase font-heading">
+                                Start Now <ArrowRight className="w-8 h-8 md:w-10 md:h-10 border-2 border-black rounded-full p-1" />
+                            </Link>
+                            <Link to="/generate?sample=1" className="inline-block mt-5 font-mono font-bold underline underline-offset-4 text-lg">
+                                Or see a sample report first →
+                            </Link>
                         </motion.div>
                     </div>
 

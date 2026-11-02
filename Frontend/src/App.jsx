@@ -1,13 +1,14 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { SignedIn, SignedOut, RedirectToSignIn } from "@clerk/clerk-react";
 import LandingPage from "./pages/LandingPage";
 import AuthPage from "./pages/AuthPage";
 import ReportConfig from "./pages/ReportConfig";
 import GamifiedLoader from "./components/GamifiedLoader";
+import RoastButton from "./components/RoastButton";
 
 function App() {
   return (
     <Router>
+      <RoastButton />
       <Routes>
         {/* Root is Landing Page (Public) */}
         <Route path="/" element={<LandingPage />} />
@@ -15,20 +16,8 @@ function App() {
         {/* Auth Page */}
         <Route path="/auth" element={<AuthPage />} />
 
-        {/* Main Application Routes - Protected */}
-        <Route
-          path="/generate"
-          element={
-            <>
-              <SignedIn>
-                <ReportConfig />
-              </SignedIn>
-              <SignedOut>
-                <RedirectToSignIn />
-              </SignedOut>
-            </>
-          }
-        />
+        {/* Report form: open to everyone; sign-in is asked for only when generating */}
+        <Route path="/generate" element={<ReportConfig />} />
 
         {/* Demo */}
         <Route path="/loading-demo" element={<GamifiedLoader />} />

@@ -91,7 +91,7 @@ def update_project_doc_with_dummies(input_path):
     
     # --- TEXT REPLACEMENTS MAPPING ---
     replacements = {
-        "A PROJECT PHASE I REPORT": "Makabulla Project Phase I Report",
+        "A PROJECT PHASE I REPORT": "A MAJOR PROJECT REPORT",
         "HAZARD WASTE DETECTION USING AI AND IOT": meta["project_title"],
         "MVJ NEXTGEN EDUCLOUD:AI-BASED ACADEMIC RESOURCE MANAGER": meta["project_subtitle"],
         "BACHELOR OF ENGINEERING": "BACHELOR OF ENGINEERING",

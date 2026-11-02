@@ -21,12 +21,12 @@ class CertificateGenerator(BaseSectionGenerator):
         styled_replacements = [
             ("MVJ COLLEGE OF ENGINEERING", meta.get("college_name", "MVJ COLLEGE OF ENGINEERING"), False, True, 18, None),
             ("DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING", meta.get("department_name", "DEPARTMENT OF COMPUTER SCIENCE").upper(), False, True, 14, None),
-            ("Computer science and Engineering", meta.get("course_name", "Electronics and Communication Engineering"), False, False, None, None),
-            (r"Major", meta.get("project_type", "Major"), True, False, None, None),
+            ("Computer science and Engineering", meta.get("course_name", "Computer Science and Engineering"), False, False, None, None),
+            (r"(?i)\bMajor\b", meta.get("project_type", "Major Project"), True, False, None, None),
             ("2024 - 2025", meta.get("academic_year", "2024-2025"), False, False, None, None),
             ("Near ITPB, Whitefield, Bangalore – 560067", meta.get("college_address", "Near ITPB, Whitefield, Bangalore – 560067"), False, False, None, None),
-            (r"[\"“]?\s*MVJ\s*NEXTGEN\s*EDUCLOUD[:\s-]+AI[:\s-]+BASED\s*ACADEMIC\s*RESOURCE\s*MANAGER\s*[\"”]?", 
-             f'"{meta.get("project_title", "PROJECT TITLE")}"', True, True, None, RGBColor(255, 0, 0))
+            (r"(?i)[\"“]?\s*MVJ\s*NEXTGEN\s*EDUCLOUD[:\s-]+AI[:\s-]+BASED\s*ACADEMIC\s*RESOURCE\s*MANAGER\s*[\"”]?", 
+             f'"{meta.get("project_title", "PROJECT TITLE").upper()}"', True, True, None, RGBColor(255, 0, 0))
         ]
 
         for p in doc.paragraphs:

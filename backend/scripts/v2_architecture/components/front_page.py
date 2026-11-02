@@ -31,10 +31,11 @@ class FrontPageGenerator(BaseSectionGenerator):
             
         styles = self.data.get("styles", {})
         
-        # Replacements Mapping
+        # Ensure title uppercase for consistency like before if needed, but original template had specific strings
         replacements = {
-            "A PROJECT PHASE I REPORT": "Makabulla Project Phase I Report",
-            "HAZARD WASTE DETECTION USING AI AND IOT": meta.get("project_title", "PROJECT TITLE"),
+            "A PROJECT PHASE I REPORT": f"A {meta.get('project_type', 'MAJOR PROJECT').upper()} REPORT",
+            "A MAJOR PROJECT REPORT": f"A {meta.get('project_type', 'MAJOR PROJECT').upper()} REPORT",
+            "HAZARD WASTE DETECTION USING AI AND IOT": meta.get("project_title", "PROJECT TITLE").upper(),
             "MVJ NEXTGEN EDUCLOUD:AI-BASED ACADEMIC RESOURCE MANAGER": meta.get("project_subtitle", ""),
             "BACHELOR OF ENGINEERING": "BACHELOR OF ENGINEERING",
             "COMPUTER SCIENCE & ENGINEERING": meta.get("department_name", "DEPARTMENT OF COMPUTER SCIENCE & ENGINEERING").replace("DEPARTMENT OF ", ""),

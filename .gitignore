@@ -15,3 +15,6 @@ __pycache__/
 
 # AI response cache (for local testing)
 ai_cache.json
+
+# Local virtual environment
+.venv/

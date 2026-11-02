@@ -441,6 +441,73 @@ class PromptTemplates:
         return "\n".join(combined_prompts)
 
     @staticmethod
+    def get_spec_bulk_prompt(specs: list[Dict[str, Any]], context: Dict[str, Any]) -> str:
+        """
+        Build one prompt for several report-type sections (see report_types.py).
+
+        Args:
+            specs: Section specs with 'key', 'instructions', 'words' and optional 'figures'
+            context: project_title, domain, report_label, ai_context
+
+        Returns:
+            A combined prompt asking for each section inside <key>...</key> tags
+        """
+        from report_types import MARKDOWN_RULES, FIGURE_RULE
+
+        ai_context = context.get("ai_context", "").strip()
+        parts = [
+            "You are writing sections of a final-year engineering "
+            f"{context.get('report_label', 'project')} report for an Indian university (VTU / MVJ College of Engineering).\n"
+            f"PROJECT TITLE: {context.get('project_title', 'Untitled Project')}\n"
+            f"DOMAIN: {context.get('domain', 'technology')}\n"
+        ]
+        if ai_context:
+            parts.append(
+                "PROJECT CONTEXT FROM THE STUDENTS (the source of truth for every section):\n"
+                f"\"\"\"{ai_context}\"\"\"\n"
+                "Use its specific details, tech stack, modules, papers and results. If it is brief, expand "
+                "logically and consistently, but never contradict it or invent measured results.\n"
+            )
+        parts.append(
+            "OUTPUT RULES:\n"
+            "- Enclose each section's content in XML-style tags exactly as named, e.g. <introduction>...</introduction>.\n"
+            "- Do not put the chapter or section title inside the tags.\n"
+            + MARKDOWN_RULES
+        )
+        for spec in specs:
+            rules = FIGURE_RULE if spec.get("figures") else ""
+            length = f"Target length: about {spec['words']} words.\n" if spec.get("words") else ""
+            parts.append(
+                f"### SECTION: {spec['key'].upper()} ###\n"
+                f"START GENERATING FOR TAG: <{spec['key']}>\n"
+                f"{spec['instructions']}\n"
+                f"{rules}"
+                f"{length}"
+                f"END GENERATING FOR TAG: </{spec['key']}>\n"
+            )
+        return "\n".join(parts)
+
+    @staticmethod
+    def get_chat_prompt(specs: list[Dict[str, Any]], context: Dict[str, Any], part: int, parts: int) -> str:
+        """
+        The bulk prompt reworded for a student to paste into their own AI chat (ChatGPT, Gemini,
+        Claude, Antigravity...), which may already know the project from earlier conversation.
+        The answer comes back inside one code block so the chat's copy button keeps the markup.
+        """
+        tags = ", ".join(f"<{spec['key']}>" for spec in specs)
+        intro = (
+            f"This is part {part} of {parts} of my project report. Use everything you know about my project "
+            "from this conversation or from the project files you can read, together with the facts below. "
+            "Write about MY project only: never invent results, numbers, features or research papers.\n\n"
+            "IMPORTANT - how to reply:\n"
+            "- Put your ENTIRE reply inside ONE code block (start with ``` and end with ```), with nothing "
+            "before or after it, so I can copy it with the copy button.\n"
+            f"- Inside the code block, wrap each section in its tag: {tags}.\n"
+            "- Write the full length asked for; do not summarise or stop early.\n\n"
+        )
+        return intro + PromptTemplates.get_spec_bulk_prompt(specs, context)
+
+    @staticmethod
     def get_word_limit(section_name: str) -> int:
         """Get the default word limit for a section."""
         if section_name not in PromptTemplates.PROMPTS:

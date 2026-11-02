@@ -3,13 +3,13 @@
         "name": "Computer Science and Engineering",
         "short": "CSE",
         "hod": {
-            "name": "Dr. Rekha Poral",
-            "designation": "Professor & Head",
-            "department": "Department of Computer Science & Engineering"
+            "name": "Dr. J Maruthu Pandi",
+            "designation": "Associate Professor",
+            "department": "Department of CSE"
         },
         "dean": {
-            "name": "Dr. Mohammad",
-            "designation": "Dean",
+            "name": "Dr. Salim A",
+            "designation": "Dean, School of CSE\nMVJCE",
             "school": "School of CSE"
         }
     },
@@ -17,9 +17,9 @@
         "name": "Electronics and Communication Engineering",
         "short": "ECE",
         "hod": {
-            "name": "Dr. I. Hameem Shanavas",
-            "designation": "Professor & Head",
-            "department": "Department of Electronics & Communication Engineering"
+            "name": "Dr. Shima Ramesh Maniyath",
+            "designation": "Head of the Department",
+            "department": "Dept. of ECE"
         },
         "dean": {
             "name": "Dr. I. Hameem Shanavas",

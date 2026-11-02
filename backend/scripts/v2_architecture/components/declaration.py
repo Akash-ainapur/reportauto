@@ -38,7 +38,7 @@ class DeclarationGenerator(BaseSectionGenerator):
             ("Computer science and Engineering", meta.get("course_name", "Electronics and Communication Engineering"), False, False, None, None),
             
             (r"Sixth", meta.get("semester", "Sixth"), True, False, None, None),
-            (r"Major", meta.get("project_type", "Major"), True, False, None, None),
+            (r"(?i)\bMajor\b", meta.get("project_type", "Major Project"), True, False, None, None),
             ("ARUNPRAKASH PATTAR", get_stud_name(0), False, False, None, None),
             ("HEMANTH S SAVANTH",  get_stud_name(1), False, False, None, None),
             ("CHINMAHESH C",       get_stud_name(2), False, False, None, None),
@@ -50,10 +50,10 @@ class DeclarationGenerator(BaseSectionGenerator):
             ("2024-2025", meta.get("academic_year", "2024-2025"), False, False, None, None),
             ("2024 - 2025", meta.get("academic_year", "2024-2025"), False, False, None, None),
              ("Computer science and Engineering", meta.get("course_name", "Electronics and Communication Engineering"), False, False, None, None),
-            (r"[\"“]?\s*MVJ\s*NEXTGEN\s*EDUCLOUD[:\s-]+AI[:\s-]+BASED\s*ACADEMIC\s*RESOURCE\s*MANAGER\s*[\"”]?", 
+            (r"(?i)[\"“]?\s*MVJ\s*NEXTGEN\s*EDUCLOUD[:\s-]+AI[:\s-]+BASED\s*ACADEMIC\s*RESOURCE\s*MANAGER\s*[\"”]?", 
              [
                  {"text": "“", "bold": True, "color": None},
-                 {"text": meta.get("project_title", "PROJECT TITLE"), "bold": True, "color": RGBColor(255, 0, 0)},
+                 {"text": meta.get("project_title", "PROJECT TITLE").upper(), "bold": True, "color": RGBColor(255, 0, 0)},
                  {"text": "”", "bold": True, "color": None},
              ], 
              True, True, None, RGBColor(255, 0, 0)),

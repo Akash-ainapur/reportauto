@@ -8,6 +8,18 @@ from docx.shared import Pt, Inches
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 
+from report_types import get_report_type, ai_section_specs
+from components.report_format import _set_run_font, add_field
+from components.front_matter import academic_year
+from components.chapters import TOC_MARKER, LOF_MARKER
+
+# Page geometry of the reference report (A4). Front pages keep the geometry of their templates.
+PAGE_WIDTH, PAGE_HEIGHT = Inches(8.27), Inches(11.69)
+MARGINS = {"top": Inches(0.93), "bottom": Inches(0.85), "left": Inches(1.0), "right": Inches(0.79)}
+HEADER_DISTANCE, FOOTER_DISTANCE = Inches(0.5), Inches(0.72)
+TEXT_WIDTH = PAGE_WIDTH - MARGINS["left"] - MARGINS["right"]
+
+
 class ReportContext:
     def __init__(self, project_root, data_file=None):
         self.project_root = project_root
@@ -16,7 +28,15 @@ class ReportContext:
         self.data_file = data_file
         self.data = self._load_data()
         self.bulk_content = {}  # Stores extracted AI content mapped by section name
-        
+
+        self.report_type = get_report_type(self.data.get("report_type"))
+        self.report_templates_dir = os.path.join(
+            project_root, "backend", "templates", "report_types", self.report_type["templates"])
+        # Filled while sections render; used to pre-fill the TOC and build the List of Figures
+        self.toc_entries = []
+        self.figures = []
+        self.bookmark_seq = 0
+
         os.makedirs(self.output_dir, exist_ok=True)
 
     def extract_bulk_content(self, raw_response: str):
@@ -25,7 +45,7 @@ class ReportContext:
         # Pattern to match <section_name>...</section_name>
         pattern = r'<(\w+)>(.*?)</\1>'
         matches = re.findall(pattern, raw_response, re.DOTALL)
-        
+
         for section_name, content in matches:
             self.bulk_content[section_name.strip()] = content.strip()
             print(f"📥 Extracted bulk content for: {section_name}")
@@ -36,22 +56,21 @@ class ReportContext:
             json_path = self.data_file
         else:
             json_path = os.path.join(self.project_root, "backend", "data", "full_report_template.json")
-            
+
         with open(json_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
-            
+
         # Post-processing: Enforce capitalization for key academic fields
         if "global_metadata" in data:
             meta = data["global_metadata"]
             if "project_title" in meta:
                 meta["project_title"] = meta["project_title"].upper()
-            if "department_name" in meta:
-                meta["department_name"] = meta["department_name"].upper()
-                
+
         return data
 
     def get_template_path(self, filename):
         return os.path.join(self.templates_dir, filename)
+
 
 class ReportBuilder:
     def __init__(self, context):
@@ -60,35 +79,42 @@ class ReportBuilder:
         self.master_doc = None
         self.composer = None
 
-    def add_step(self, generator_class):
-        self.steps.append(generator_class)
+    def add_step(self, generator_factory, section_type="main", name=None):
+        """generator_factory(context) -> generator with .generate(); a generator class works too.
+        section_type: 'isolated' (front pages), 'preliminary' (roman numbered) or 'main'."""
+        name = name or getattr(generator_factory, "__name__", "Section")
+        self.steps.append({'generator': generator_factory, 'type': section_type, 'name': name})
         return self
 
     def build(self):
         print("🏗 Starting Build Process...")
-        
+
         # Pre-process: Trigger bulk AI requests to minimize API calls
         self._perform_bulk_ai_generation()
-        
-        for i, StepClass in enumerate(self.steps):
-            print(f"  -> Executing Step: {StepClass.__name__}", flush=True)
-            generator = StepClass(self.context)
-            doc = generator.generate()
-            
-            self._append_document(doc, StepClass)
-        
-        # Apply headers and footers after all documents are merged
+
+        # We need to save the type for each section added to master_doc
+        self.section_types = []
+
+        for step_info in self.steps:
+            factory, sec_type = step_info['generator'], step_info['type']
+            print(f"  -> Executing Step: {step_info['name']}", flush=True)
+            doc = factory(self.context).generate()
+
+            num_sections_before = len(self.master_doc.sections) if self.master_doc else 0
+            self._append_document(doc)
+            num_sections_after = len(self.master_doc.sections)
+            for _ in range(num_sections_after - num_sections_before):
+                self.section_types.append(sec_type)
+
+        self._fill_table_of_contents()
+        self._fill_list_of_figures()
+        self._apply_page_setup()
         self._apply_headers_footers()
-        
-        # Configure professional page numbering
         self._configure_page_numbering()
-        
-        # Note: TOC is now generated by TableOfContentsGenerator component
-        # No need to call _generate_table_of_contents() here
-            
+        self._request_field_update()
         return self
 
-    def _append_document(self, doc, step_class):
+    def _append_document(self, doc):
         # If it's the very first document, initialize master
         if self.master_doc is None:
             self.master_doc = doc
@@ -100,386 +126,323 @@ class ReportBuilder:
             self.composer.append(doc)
             print("     (Appended to Master)")
 
-        # Post-processing: Borders
-        # We check if the step requests borders
-        if getattr(step_class, "NEEDS_BORDER", False):
-            self._apply_border_to_last_section()
+    def _section_type(self, idx):
+        return self.section_types[idx] if idx < len(self.section_types) else "main"
 
-    def _apply_border_to_last_section(self):
-        print("     (Applying Page Border)")
-        section = self.master_doc.sections[-1]
+    # ========================================
+    # PAGE SETUP, BORDERS, HEADERS & FOOTERS
+    # ========================================
+
+    def _apply_page_setup(self):
+        for idx, section in enumerate(self.master_doc.sections):
+            sec_type = self._section_type(idx)
+            if sec_type == "isolated":
+                continue  # front pages keep the reference geometry and drawn borders
+            section.page_width, section.page_height = PAGE_WIDTH, PAGE_HEIGHT
+            section.top_margin, section.bottom_margin = MARGINS["top"], MARGINS["bottom"]
+            section.left_margin, section.right_margin = MARGINS["left"], MARGINS["right"]
+            section.header_distance, section.footer_distance = HEADER_DISTANCE, FOOTER_DISTANCE
+            # Preliminary pages carry a thin page border; chapters have none
+            self._set_page_border(section, sec_type == "preliminary")
+
+    def _set_page_border(self, section, enabled):
         sectPr = section._sectPr
-        
-        # Remove existing
-        for child in list(sectPr):
-            if child.tag == qn("w:pgBorders"):
-                sectPr.remove(child)
-        
+        for child in sectPr.findall(qn("w:pgBorders")):
+            sectPr.remove(child)
+        if not enabled:
+            return
         pgBorders = OxmlElement("w:pgBorders")
         pgBorders.set(qn("w:offsetFrom"), "page")
         for side in ["top", "left", "bottom", "right"]:
             border = OxmlElement(f"w:{side}")
             border.set(qn("w:val"), "single")
-            border.set(qn("w:sz"), "12")
+            border.set(qn("w:sz"), "4")
             border.set(qn("w:space"), "24")
             border.set(qn("w:color"), "000000")
             pgBorders.append(border)
-        sectPr.append(pgBorders)
-    
-    # ========================================
-    # HEADER & FOOTER CONFIGURATION
-    # ========================================
-    # Modify these methods to change header/footer formatting across ALL pages
-    
-    def _format_header(self, header, project_title):
-        """
-        Format header for a section.
-        CUSTOMIZE THIS METHOD to change header appearance.
-        
-        Current format: Project title (CAPS, 12pt, left-aligned)
-        """
-        # Clear all existing paragraphs
-        for para in list(header.paragraphs):
-            p_elem = para._element
-            p_elem.getparent().remove(p_elem)
-        
-        # Add project title
-        header_para = header.add_paragraph()
-        run = header_para.add_run(project_title.upper())
-        run.font.size = Pt(12)
-        header_para.alignment = WD_ALIGN_PARAGRAPH.LEFT
-    
-    def _format_footer(self, footer, department_name, department_abbr, academic_year):
-        """
-        Format footer for a section.
-        CUSTOMIZE THIS METHOD to change footer appearance.
-        
-        Current format: Department | Page Number | Year (12pt, 3-column layout)
-        """
-        # Clear all existing content
-        for para in list(footer.paragraphs):
-            p_elem = para._element
-            p_elem.getparent().remove(p_elem)
-        
-        # Add footer content paragraph
-        footer_para = footer.add_paragraph()
-        
-        # Configure tab stops for 3-column layout
-        tab_stops = footer_para.paragraph_format.tab_stops
-        tab_stops.clear_all()
-        tab_stops.add_tab_stop(Inches(3.0), WD_TAB_ALIGNMENT.CENTER)
-        tab_stops.add_tab_stop(Inches(6.0), WD_TAB_ALIGNMENT.RIGHT)
-        
-        # Left column: Department (auto-truncate if too long)
-        if len(department_name) > 30:
-            department_display = department_abbr if department_abbr else department_name[:30] + "..."
+        # pgBorders must come before pgNumType/cols etc. in sectPr; insert after pgMar
+        pgMar = sectPr.find(qn("w:pgMar"))
+        if pgMar is not None:
+            pgMar.addnext(pgBorders)
         else:
-            department_display = department_name
-        
-        left_run = footer_para.add_run(department_display)
-        left_run.font.size = Pt(12)
-        
-        # Tab to center
-        footer_para.add_run("\t")
-        
-        # Center column: Page number
-        center_run = footer_para.add_run()
-        center_run.font.size = Pt(12)
-        
-        # Add PAGE field
-        fldChar1 = OxmlElement('w:fldChar')
-        fldChar1.set(qn('w:fldCharType'), 'begin')
-        center_run._element.append(fldChar1)
-        
-        instrText = OxmlElement('w:instrText')
-        instrText.set(qn('xml:space'), 'preserve')
-        instrText.text = "PAGE"
-        center_run._element.append(instrText)
-        
-        fldChar2 = OxmlElement('w:fldChar')
-        fldChar2.set(qn('w:fldCharType'), 'end')
-        center_run._element.append(fldChar2)
-        
-        # Tab to right
-        footer_para.add_run("\t")
-        
-        # Right column: Year
-        right_run = footer_para.add_run(academic_year)
-        right_run.font.size = Pt(12)
-    
-    # ========================================
-    # END OF HEADER & FOOTER CONFIGURATION
-    # ========================================
-    
+            sectPr.append(pgBorders)
+
+    def _clear(self, header_or_footer):
+        header_or_footer.is_linked_to_previous = False
+        for para in list(header_or_footer.paragraphs):
+            para._element.getparent().remove(para._element)
+        for tbl in list(header_or_footer.tables):
+            tbl._element.getparent().remove(tbl._element)
+
+    def _rule(self, paragraph, side):
+        """Full-width line above or below a paragraph (the reference's header/footer rule)."""
+        pPr = paragraph._p.get_or_add_pPr()
+        pBdr = OxmlElement("w:pBdr")
+        b = OxmlElement(f"w:{side}")
+        b.set(qn("w:val"), "single")
+        b.set(qn("w:sz"), "12")
+        b.set(qn("w:space"), "1")
+        b.set(qn("w:color"), "000000")
+        pBdr.append(b)
+        pPr.append(pBdr)
+
+    def _format_header(self, header, project_title):
+        """Chapter pages: project title, left, 12pt, with a rule underneath."""
+        self._clear(header)
+        p = header.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        p.paragraph_format.space_after = Pt(0)
+        _set_run_font(p.add_run(project_title.upper()), 12)
+        self._rule(p, "bottom")
+
+    def _format_footer(self, footer, department_label, year):
+        """Chapter pages: rule, then 'DEPT. OF CSE, MVJCE' | year | page number."""
+        self._clear(footer)
+        p = footer.add_paragraph()
+        p.paragraph_format.space_before = Pt(0)
+        tabs = p.paragraph_format.tab_stops
+        tabs.add_tab_stop(Inches(3.4), WD_TAB_ALIGNMENT.CENTER)
+        tabs.add_tab_stop(TEXT_WIDTH, WD_TAB_ALIGNMENT.RIGHT)
+        self._rule(p, "top")
+        _set_run_font(p.add_run(f"{department_label}\t{year}\t"), 12)
+        add_field(p, "PAGE", "1")
+        for run in p.runs:
+            _set_run_font(run, 12)
+
+    def _format_footer_simple(self, footer):
+        """Preliminary pages: centred page number (I, II, III...)."""
+        self._clear(footer)
+        p = footer.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        add_field(p, "PAGE", "I")
+        for run in p.runs:
+            _set_run_font(run, 12)
+
     def _apply_headers_footers(self):
-        """Apply headers and footers to sections from Introduction onwards (section 5+)."""
         if not self.master_doc:
             return
-        
+
         print("  📄 Applying headers and footers...")
-        
-        # Get data from JSON
-        data = self.context.data
-        global_meta = data.get("global_metadata", {})
-        project_title = global_meta.get("project_title", "")
-        department_name = global_meta.get("department_name", "")
-        department_abbr = global_meta.get("department_abbr", "")
-        academic_year = global_meta.get("academic_year", "")
-        
-        # Count sections for debugging
-        total_sections = len(self.master_doc.sections)
-        print(f"     Total sections in document: {total_sections}")
-        
-        # Apply headers/footers based on section type
-        for section_idx, section in enumerate(self.master_doc.sections):
-            if section_idx < 3:
-                # Front Page, Certificate, Declaration: Isolated (no header/footer)
-                section.different_first_page_header_footer = True
-                print(f"     Section {section_idx}: Isolated (no header/footer)")
-                continue
-            
-            elif 3 <= section_idx <= 6:
-                # Ack, Abstract, TOC, LOF: Simple centered footer only
-                section.different_first_page_header_footer = False
-                
-                # Remove page number restart
-                section_props = section._sectPr
-                pgNumType_list = section_props.findall(qn('w:pgNumType'))
-                for pgNumType in pgNumType_list:
-                    section_props.remove(pgNumType)
-                
-                # Simple centered footer (page number only)
+        meta = self.context.data.get("global_metadata", {})
+        project_title = meta.get("project_title", "")
+        abbr = (meta.get("department_abbr") or "CSE").strip().upper()
+        department_label = f"DEPT. OF {abbr}, MVJCE"
+        year = academic_year(meta.get("academic_year", ""))
+
+        for idx, section in enumerate(self.master_doc.sections):
+            sec_type = self._section_type(idx)
+            section.different_first_page_header_footer = False
+            if sec_type == "isolated":
+                self._clear(section.header)
+                self._clear(section.footer)
+            elif sec_type == "preliminary":
+                self._clear(section.header)
                 self._format_footer_simple(section.footer)
-                print(f"     Section {section_idx}: Simple footer (centered page#)")
-            
             else:
-                # Introduction onwards (section 6+): Full header + footer
-                print(f"     Section {section_idx}: Adding header/footer")
-                
-                # Remove page number restart
-                section_props = section._sectPr
-                pgNumType_list = section_props.findall(qn('w:pgNumType'))
-                for pgNumType in pgNumType_list:
-                    section_props.remove(pgNumType)
-                
-                # Ensure this section doesn't link to previous
-                section.different_first_page_header_footer = False
-                
-                # Use helper methods to format header and footer
                 self._format_header(section.header, project_title)
-                self._format_footer(section.footer, department_name, department_abbr, academic_year)
-    
-    def _format_footer_simple(self, footer):
-        """Simple footer with centered page number only (for preliminary pages)."""
-        # Clear all existing content
-        for para in list(footer.paragraphs):
-            p_elem = para._element
-            p_elem.getparent().remove(p_elem)
-        
-        # Add centered page number
-        footer_para = footer.add_paragraph()
-        footer_para.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        
-        # Add page number field
-        run = footer_para.add_run()
-        run.font.size = Pt(12)
-        
-        fldChar1 = OxmlElement('w:fldChar')
-        fldChar1.set(qn('w:fldCharType'), 'begin')
-        run._element.append(fldChar1)
-        
-        instrText = OxmlElement('w:instrText')
-        instrText.set(qn('xml:space'), 'preserve')
-        instrText.text = "PAGE"
-        run._element.append(instrText)
-        
-        fldChar2 = OxmlElement('w:fldChar')
-        fldChar2.set(qn('w:fldCharType'), 'end')
-        run._element.append(fldChar2)
+                self._format_footer(section.footer, department_label, year)
+
+    def _configure_page_numbering(self):
+        """Upper-case Roman numerals for preliminary pages, Arabic from Chapter 1."""
+        if not self.master_doc:
+            return
+
+        print("  📊 Configuring page numbering...")
+        first_prelim, first_main = True, True
+        for idx, section in enumerate(self.master_doc.sections):
+            sectPr = section._sectPr
+            for old in sectPr.findall(qn('w:pgNumType')):
+                sectPr.remove(old)
+            sec_type = self._section_type(idx)
+            if sec_type == "isolated":
+                continue
+            pgNumType = OxmlElement('w:pgNumType')
+            if sec_type == "preliminary":
+                pgNumType.set(qn('w:fmt'), 'upperRoman')
+                if first_prelim:
+                    pgNumType.set(qn('w:start'), '1')
+                    first_prelim = False
+            else:
+                pgNumType.set(qn('w:fmt'), 'decimal')
+                if first_main:
+                    pgNumType.set(qn('w:start'), '1')
+                    first_main = False
+            # pgNumType goes before cols/docGrid in the schema order
+            anchor = sectPr.find(qn('w:cols'))
+            if anchor is not None:
+                anchor.addprevious(pgNumType)
+            else:
+                sectPr.append(pgNumType)
+
+    # ========================================
+    # TABLE OF CONTENTS & LIST OF FIGURES
+    # ========================================
+
+    def _marker_paragraph(self, marker):
+        for p in self.master_doc.element.body.iter(qn("w:p")):
+            if marker in "".join(t.text or "" for t in p.iter(qn("w:t"))):
+                return p
+        return None
+
+    def _fill_table_of_contents(self):
+        """Pre-fill the TOC field result with the entry list so it reads correctly even before
+        Word updates it; updating the field adds the page numbers."""
+        p = self._marker_paragraph(TOC_MARKER)
+        if p is None:
+            return
+        for r in p.findall(qn("w:r")):
+            if TOC_MARKER in "".join(t.text or "" for t in r.findall(qn("w:t"))):
+                p.remove(r)
+        style_names = {s.name for s in self.master_doc.styles}
+        anchor = p
+        for text, level in self.context.toc_entries:
+            para = self.master_doc.add_paragraph()
+            if f"toc {level}" in style_names:
+                para.style = self.master_doc.styles[f"toc {level}"]
+            _set_run_font(para.add_run(text), 12, level == 1)
+            para.paragraph_format.space_after = Pt(4)
+            anchor.addnext(para._p)
+            anchor = para._p
+
+    def _fill_list_of_figures(self):
+        p = self._marker_paragraph(LOF_MARKER)
+        if p is None:
+            return
+        figures = self.context.figures
+        table = self.master_doc.add_table(rows=1 + max(1, len(figures)), cols=3)
+        table.style = self.master_doc.styles["Table Grid"] if "Table Grid" in [s.name for s in self.master_doc.styles] else None
+        widths = (Inches(1.3), Inches(3.9), Inches(1.1))
+        for j, head in enumerate(("FIGURE NO.", "FIGURE NAME", "PAGE NO.")):
+            cell = table.cell(0, j)
+            cell.width = widths[j]
+            para = cell.paragraphs[0]
+            para.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            _set_run_font(para.add_run(head), 12, True)
+        if not figures:
+            _set_run_font(table.cell(1, 1).paragraphs[0].add_run("No figures"), 12)
+        for i, fig in enumerate(figures, start=1):
+            cells = table.rows[i].cells
+            for j, cell in enumerate(cells):
+                cell.width = widths[j]
+            c0 = cells[0].paragraphs[0]
+            c0.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            _set_run_font(c0.add_run(fig["number"]), 12)
+            _set_run_font(cells[1].paragraphs[0].add_run(fig["caption"]), 12)
+            c2 = cells[2].paragraphs[0]
+            c2.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            add_field(c2, f"PAGEREF {fig['bookmark']} \\h", "")
+            for run in c2.runs:
+                _set_run_font(run, 12)
+        for row in table.rows:
+            for cell in row.cells:
+                for para in cell.paragraphs:
+                    para.paragraph_format.space_before = Pt(3)
+                    para.paragraph_format.space_after = Pt(3)
+        p.addprevious(table._tbl)
+        p.getparent().remove(p)
+        print(f"  🖼 List of Figures: {len(figures)} figure(s)")
+
+    def _request_field_update(self):
+        """Ask Word to refresh fields (TOC page numbers, figure pages) when the file is opened."""
+        settings = self.master_doc.settings.element
+        for old in settings.findall(qn("w:updateFields")):
+            settings.remove(old)
+        el = OxmlElement("w:updateFields")
+        el.set(qn("w:val"), "true")
+        settings.append(el)
 
     def save(self, filename="full_report.docx"):
         output_path = os.path.join(self.context.output_dir, filename)
         if self.composer:
             self.composer.save(output_path)
             print(f"✅ Report Saved: {output_path}")
-            
-            # OPTIONAL: Auto-update TOC using Word automation
-            # Uncomment the line below to enable (requires pywin32 and MS Word)
-            # self._auto_update_toc_with_word(output_path)
+            # Where Word is available (local Windows runs) fill page numbers now
+            if os.environ.get("REPORT_SKIP_WORD_UPDATE") != "1":
+                self._auto_update_toc_with_word(output_path)
         else:
             print("⚠ Warning: No content to save.")
-    
-    def _configure_page_numbering(self):
-        """Configure Roman numerals for prelims, Arabic from Introduction with restart."""
-        if not self.master_doc:
-            return
-        
-        print("  📊 Configuring page numbering...")
-        
-        for section_idx, section in enumerate(self.master_doc.sections):
-            sectPr = section._sectPr
-            
-            # Remove existing page number settings
-            pgNumType_list = sectPr.findall(qn('w:pgNumType'))
-            for pgNumType in pgNumType_list:
-                sectPr.remove(pgNumType)
-            
-            pgNumType = OxmlElement('w:pgNumType')
-            
-            if section_idx <= 2:
-                # Front Page, Certificate, Declaration: hidden
-                pass
-            elif 3 <= section_idx <= 6:
-                # Ack, Abstract, TOC, LOF: Roman (i, ii, iii, iv)
-                pgNumType.set(qn('w:fmt'), 'lowerRoman')
-                if section_idx == 3:
-                    pgNumType.set(qn('w:start'), '1')
-                sectPr.append(pgNumType)
-            elif section_idx == 7:
-                # Introduction: RESTART at 1 with Arabic
-                pgNumType.set(qn('w:fmt'), 'decimal')
-                pgNumType.set(qn('w:start'), '1')
-                sectPr.append(pgNumType)
-            else:
-                # Continue Arabic
-                pgNumType.set(qn('w:fmt'), 'decimal')
-                sectPr.append(pgNumType)
-    
-    def _generate_table_of_contents(self):
-        """Insert TOC field at section 5."""
-        if not self.master_doc:
-            return
-        
-        print("  📑 Generating Table of Contents...")
-        
-        # Find placeholder paragraph and insert TOC field
-        for para in self.master_doc.paragraphs:
-            if '[Table of Contents will be auto-generated here]' in para.text:
-                para.clear()
-                run = para.add_run()
-                
-                # TOC field
-                fldChar1 = OxmlElement('w:fldChar')
-                fldChar1.set(qn('w:fldCharType'), 'begin')
-                
-                instrText = OxmlElement('w:instrText')
-                instrText.set(qn('xml:space'), 'preserve')
-                instrText.text = 'TOC \\o "1-3" \\h \\z \\u'
-                
-                fldChar2 = OxmlElement('w:fldChar')
-                fldChar2.set(qn('w:fldCharType'), 'separate')
-                
-                run._element.append(fldChar1)
-                run._element.append(instrText)
-                run._element.append(fldChar2)
-                
-                run_text = para.add_run("Right-click and select 'Update Field'")
-                run_text.font.italic = True
-                
-                fldChar3 = OxmlElement('w:fldChar')
-                fldChar3.set(qn('w:fldCharType'), 'end')
-                run._element.append(fldChar3)
-                
-                print("     ✅ TOC field inserted")
-                break
-    
+
+    # ========================================
+    # AI CONTENT
+    # ========================================
+
     def _perform_bulk_ai_generation(self):
         """Execute bulk AI requests to minimize API calls."""
         from services.gemini_service import GeminiService
         from services.prompt_templates import PromptTemplates
-        
+
         # Check if AI is enabled globally or if ai_context is provided
         ai_config = self.context.data.get("ai_content_config", {})
         ai_context = self.context.data.get("ai_context", "").strip()
-        
+
         # Auto-enable AI if ai_context is present (Frontend integration)
         ai_enabled = ai_config.get("enabled", False) or len(ai_context) > 10
-        
+
         if not ai_enabled:
             print("⏭ AI content generation disabled. Skipping bulk requests.")
             return
 
         print("🤖 Triggering Bulk AI Content Generation...")
         ai_service = GeminiService()
-        
-        # Define groups
-        groups = self._get_bulk_groups()
-        
-        # Prepare context for prompt template
+
+        specs = ai_section_specs(self.context.report_type)
+        wanted = getattr(self, "ai_sections", None)
+        groups = [[k for k in batch if wanted is None or k in wanted]
+                  for batch in self.context.report_type["ai_batches"]]
+        groups = [g for g in groups if g]
+
         global_meta = self.context.data.get("global_metadata", {})
         prompt_context = {
             "project_title": global_meta.get("project_title", "Untitled Project"),
-            "project_type": global_meta.get("project_type", "engineering"),
             "domain": global_meta.get("domain", "technology"),
-            "ai_context": ai_context
+            "report_label": self.context.report_type["label"],
+            "ai_context": ai_context,
+            "chapter_numbers": getattr(self, "chapter_numbers", {}),
         }
-        
-        for i, group in enumerate(groups):
-            print(f"  -> Executing Step: BulkAIGeneration_{i+1}", flush=True) # Caught by app.py for progress
-            print(f"   Request {i+1}/{len(groups)}: Generating {', '.join(group)}...", flush=True)
-            
-            # 1. Build combined prompt with ai_context
-            bulk_prompt = PromptTemplates.get_bulk_prompt(group, prompt_context)
-            
-            # 2. Get AI response
-            raw_response = ai_service.generate_bulk_content(bulk_prompt)
-            
-            # 3. Extract and store individual sections
-            self.context.extract_bulk_content(raw_response)
-            
-        print("✅ Bulk AI generation completed.")
 
-    def _get_bulk_groups(self):
-        """
-        Define which sections should be batched together.
-        Optimized to reduce 9 calls down to just 2 for Gemini 3 Flash.
-        """
-        return [
-            ["abstract", "introduction", "literature_survey", "problem_statement"],
-            ["existing_proposed", "methodology"],
-            ["requirements", "conclusion", "references"]
-        ]
+        for i, group in enumerate(groups):
+            print(f"  -> Executing Step: BulkAIGeneration_{i+1}", flush=True)  # Caught by app.py for progress
+            print(f"   Request {i+1}/{len(groups)}: Generating {', '.join(group)}...", flush=True)
+            bulk_prompt = PromptTemplates.get_spec_bulk_prompt([specs[k] for k in group], prompt_context)
+            raw_response = ai_service.generate_bulk_content(bulk_prompt)
+            self.context.extract_bulk_content(raw_response)
+
+        # app.py reads this line to tell the student which chapters are placeholders
+        missing = [k for group in groups for k in group if k not in self.context.bulk_content]
+        print(f"AI_MISSING_SECTIONS: {','.join(missing)}", flush=True)
+        print("✅ Bulk AI generation completed.")
 
     def _auto_update_toc_with_word(self, output_path):
         """
-        OPTIONAL: Use pywin32 to open document in Word and update TOC field.
-        
-        Requirements:
-        - Windows OS
-        - Microsoft Word installed
-        - pywin32 library: pip install pywin32
-        
-        This makes TOC populate automatically without user action.
+        Use Word (Windows + pywin32) to update the TOC and figure page numbers.
+        Skipped silently where Word is not available (e.g. the Linux server); the file
+        then asks Word to update fields when the student opens it.
         """
         try:
             import win32com.client
-            import os
-            
-            print("  🔄 Auto-updating TOC with Microsoft Word...")
-            
-            # Get absolute path
-            abs_path = os.path.abspath(output_path)
-            
-            # Create Word application instance (hidden)
-            word = win32com.client.Dispatch("Word.Application")
+            import pythoncom
+        except ImportError:
+            return
+
+        word = None
+        try:
+            print("  🔄 Updating TOC page numbers with Microsoft Word...")
+            pythoncom.CoInitialize()
+            word = win32com.client.DispatchEx("Word.Application")
             word.Visible = False
-            
-            # Open document
-            doc = word.Documents.Open(abs_path)
-            
-            # Update all fields (including TOC)
+            word.DisplayAlerts = 0
+            doc = word.Documents.Open(os.path.abspath(output_path))
+            for toc in doc.TablesOfContents:
+                toc.Update()
             doc.Fields.Update()
-            
-            # Save and close
             doc.Save()
             doc.Close()
-            word.Quit()
-            
-            print("     ✅ TOC auto-updated successfully")
-            
-        except ImportError:
-            print("     ⚠️  pywin32 not installed. Run: pip install pywin32")
-            print("     💡 User can manually update: Right-click TOC → Update Field")
+            print("     ✅ TOC updated")
         except Exception as e:
-            print(f"     ⚠️  Could not auto-update TOC: {e}")
-            print("     💡 User can manually update: Right-click TOC → Update Field")
+            print(f"     ⚠️  Could not update TOC with Word: {e}")
+        finally:
+            if word is not None:
+                try:
+                    word.Quit()
+                except Exception:
+                    pass
